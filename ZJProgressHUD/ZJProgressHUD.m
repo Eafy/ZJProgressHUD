@@ -28,16 +28,20 @@
 @end
 
 @implementation ZJProgressHUD
-static ZJProgressHUD *_sharedHUD; 
+static ZJProgressHUD *_shared;
 
-+ (instancetype)sharedHUD {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^ {
-        _sharedHUD = [[ZJProgressHUD alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        _sharedHUD.successImage = [[ZJProgressHUD sharedHUD] imageNamed:@"icon_zj_hud_success"];
-        _sharedHUD.errorImage = [[ZJProgressHUD sharedHUD] imageNamed:@"icon_zj_hud_error"];
-    });
-    return _sharedHUD;
++ (instancetype)shared {
+    if (!_shared) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^ {
+            _shared = [[ZJProgressHUD alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+            _shared.successImage = [[ZJProgressHUD shared] imageNamed:@"icon_zj_hud_success"];
+            _shared.errorImage = [[ZJProgressHUD shared] imageNamed:@"icon_zj_hud_error"];
+            _shared.font = [UIFont systemFontOfSize:16];
+            _shared.titleColor = [UIColor whiteColor];
+        });
+    }
+    return _shared;
 }
 
 #pragma mark - MBProgressHUDDelegate
@@ -60,253 +64,253 @@ static ZJProgressHUD *_sharedHUD;
 #pragma mark _______________________________________________
 #pragma mark 单例类--外部调用方法
 
-+ (void)hideHUD
++ (void)hide
 {
-    [[ZJProgressHUD sharedHUD] hideHubWithAnmotion:YES];
+    [[ZJProgressHUD shared] hideHubWithAnmotion:YES];
 }
 
-+ (void)hideProcessHUD
++ (void)hideProcess
 {
-    [[ZJProgressHUD sharedHUD] hideProcessHubWithAnmotion:YES];
+    [[ZJProgressHUD shared] hideProcessHubWithAnmotion:YES];
 }
 
-+ (void)imHideHUD
++ (void)imHide
 {
-    [[ZJProgressHUD sharedHUD] hideHubWithAnmotion:NO];
+    [[ZJProgressHUD shared] hideHubWithAnmotion:NO];
 }
 
-+ (void)imHideProcessHUD
++ (void)imHideProcess
 {
-    [[ZJProgressHUD sharedHUD] hideProcessHubWithAnmotion:NO];
+    [[ZJProgressHUD shared] hideProcessHubWithAnmotion:NO];
 }
 
 + (void)showMessage:(NSString *)title
 {
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title mark:YES];
 }
 
 + (void)showLanMessage:(NSString *)title
 {
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title mark:YES];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title mark:YES];
 }
 
 + (void)showMessageForNoMark:(NSString *)title
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title mark:NO];
 }
 
 + (void)showLanMessageForNoMark:(NSString *)title
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title mark:NO];
 }
 
 + (void)showLoading
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
 }
 
 + (void)showLanLoading
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
 }
 
 + (void)showLoadingForNoMark
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
 }
 
 + (void)showLanLoadingForNoMark
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
 }
 
 + (void)showSetting
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
 }
 
 + (void)showLanSetting
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
 }
 
 + (void)showSettingForNoMark
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
 }
 
 + (void)showLanSettingForNoMark
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
 }
 
 + (void)showSubmitting
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
 }
 
 + (void)showLanSubmitting
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
 }
 
 + (void)showSubmittingForNoMark
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
 }
 
 + (void)showLanSubmittingForNoMark
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
 }
 
 + (void)showStatusWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:0];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:0];
 }
 
 + (void)showLanStatusWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:0];
 }
 
 + (void)showStatusWithTitle:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:yOffset];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:yOffset];
 }
 
 + (void)showStatusWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration view:(UIView *)view
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
 }
 
 + (void)showLanStatusWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration view:(UIView *)view
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
 }
 
 + (void)showStatusWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration view:(UIView *)view yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
 }
 
 + (void)showSuccessWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:0];
 }
 
 + (void)showLanSuccessWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:0];
 }
 
 + (void)showSuccessWithTitle:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:yOffset];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:yOffset];
 }
 
 + (void)showSuccessWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:0];
 }
 
 + (void)showLanSuccessWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:0];
 }
 
 + (void)showSuccessWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:yOffset];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:yOffset];
 }
 
 + (void)showLanSuccessWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:yOffset];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:yOffset];
 }
 
 + (void)showErrorWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:2 mark:YES view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:YES view:nil yOffset:0];
 }
 
 + (void)showErrorWithTitle:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:2 mark:YES view:nil yOffset:yOffset];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:YES view:nil yOffset:yOffset];
 }
 
 + (void)showLanErrorWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
 }
 
 + (void)showErrorWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
 }
 
 + (void)showLanErrorWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showLan];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showLan];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
 }
 
 + (void)showErrorWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHideHUD];
-    [[ZJProgressHUD sharedHUD] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:yOffset];
+    [ZJProgressHUD imHide];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:yOffset];
 }
 
 + (ZJProgressHUD *)showAnnularHubWithWithTitle:(NSString *)title view:(UIView *)view
 {
-    [ZJProgressHUD imHideProcessHUD];
-    [[ZJProgressHUD sharedHUD] showAnnularHubWithWithTitle:title mark:NO view:view];
-    return [ZJProgressHUD sharedHUD];
+    [ZJProgressHUD hideProcess];
+    [[ZJProgressHUD shared] showAnnularHubWithWithTitle:title mark:NO view:view];
+    return [ZJProgressHUD shared];
 }
 
 #pragma mark _______________________________________________
@@ -332,17 +336,19 @@ static ZJProgressHUD *_sharedHUD;
 
 - (UIWindow *)overlayWindow
 {
-    if(!_overlayWindow) {
+    if (!_overlayWindow) {
+        UIWindow *window = [ZJProgressHUD keyWindow];
+        if (!window) {
+            window = [UIApplication sharedApplication].delegate.window;
+        }
         _overlayWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         _overlayWindow.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin
-								| UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+                                | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         _overlayWindow.backgroundColor = [UIColor clearColor];
         _overlayWindow.userInteractionEnabled = NO;
-        UIWindow *window = [ZJProgressHUD keyWindow];
+        
         if (window) {
             [window addSubview:_overlayWindow];
-        } else if ([UIApplication sharedApplication].delegate.window) {
-            [[UIApplication sharedApplication].delegate.window addSubview:_overlayWindow];
         }
     }
     return _overlayWindow;
@@ -379,7 +385,7 @@ static ZJProgressHUD *_sharedHUD;
     
     // 快速显示一个提示信息
     self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    self.hud.labelFont = [UIFont systemFontOfSize:16];
+    self.hud.labelFont = self.font;
     self.hud.labelText = string;
     self.hud.delegate = nil;
     // 隐藏时候从父控件中移除
@@ -420,7 +426,7 @@ static ZJProgressHUD *_sharedHUD;
         }
     }
     self.hud.mode = MBProgressHUDModeCustomView;
-    self.hud.labelFont = [UIFont systemFontOfSize:16];
+    self.hud.labelFont = self.font;
     self.hud.labelText = title;
     self.hud.delegate = self;
     self.hud.yOffset = yOffset;
@@ -454,6 +460,7 @@ static ZJProgressHUD *_sharedHUD;
     self.hud.mode = MBProgressHUDModeAnnularDeterminate;
     self.hud.labelFont = [UIFont systemFontOfSize:14];
     self.hud.labelText = title;
+    self.hud.labelText = self.titleColor;
     self.hud.progress = 0;
     self.hud.color = [UIColor clearColor];
     self.hud.delegate = self;
@@ -493,7 +500,7 @@ static ZJProgressHUD *_sharedHUD;
 - (NSBundle *)bundleWithBundleName:(NSString *)bundleName {
     
     NSURL *associateBundleURL = nil;
-    if (!bundleName) {
+    if (bundleName) {
         if ([bundleName containsString:@".bundle"]) {
             bundleName = [bundleName componentsSeparatedByString:@".bundle"].firstObject;
         }

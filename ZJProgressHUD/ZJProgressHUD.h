@@ -10,17 +10,23 @@
 
 @interface ZJProgressHUD : UIView
 
++ (instancetype _Nonnull )shared;
+
 /// 进度框提示进度值
 @property (nonatomic,assign) CGFloat progress;
 /// 成功图片，不设置使用默认图片
 @property (nonatomic,strong) UIImage *_Nullable successImage;
 /// 失败或错误图片，不设置使用默认图片
 @property (nonatomic,strong) UIImage * _Nullable errorImage;
+/// 显示文字字体大小，默认：常规16
+@property (nonatomic,strong) UIFont * _Nullable font;
+/// 显示文字颜色，默认白色
+@property (nonatomic,strong) UIColor * _Nullable titleColor;
 
 /// 隐藏
-+ (void)hideHUD;
++ (void)hide;
 /// 影藏进度提示框
-+ (void)hideProcessHUD;
++ (void)hideProcess;
 
 /// 显示带遮罩层提示框
 /// @param title 提示语

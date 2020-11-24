@@ -49,7 +49,7 @@
 #endif
 
 
-static const CGFloat kPadding = 4.f;
+static const CGFloat kPadding = 6.f;    //间距
 static const CGFloat kLabelFontSize = 16.f;
 static const CGFloat kDetailsLabelFontSize = 12.f;
 
