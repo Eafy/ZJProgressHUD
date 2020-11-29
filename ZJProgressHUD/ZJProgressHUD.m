@@ -336,6 +336,10 @@ static ZJProgressHUD *_shared;
     UIWindow *keyWindow = [[[UIApplication sharedApplication].windows sortedArrayUsingComparator:^NSComparisonResult(UIWindow *win1, UIWindow *win2) {
         return win1.windowLevel < win2.windowLevel || !win1.isOpaque;
     }] lastObject];
+    
+    if (!keyWindow) {
+        keyWindow = [UIApplication sharedApplication].delegate.window;
+    }
     return keyWindow;
 }
 
@@ -343,9 +347,6 @@ static ZJProgressHUD *_shared;
 {
     if (!_overlayWindow) {
         UIWindow *window = [ZJProgressHUD keyWindow];
-        if (!window) {
-            window = [UIApplication sharedApplication].delegate.window;
-        }
         _overlayWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         _overlayWindow.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin
                                 | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
@@ -367,6 +368,11 @@ static ZJProgressHUD *_shared;
         }
         [self.overlayWindow removeFromSuperview];
         _overlayWindow = nil;
+        
+        UIWindow *window = [ZJProgressHUD keyWindow];
+        if (window) {
+            [window makeKeyAndVisible];
+        }
     }
 }
 
