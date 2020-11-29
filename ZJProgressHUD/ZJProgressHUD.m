@@ -18,6 +18,7 @@
 
 @interface ZJProgressHUD() <MBProgressHUDDelegate>
 
+@property (nonatomic, strong) UIWindow *mainWindow;
 @property (nonatomic, strong) UIWindow *overlayWindow;
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) UIView *subView;
@@ -346,15 +347,17 @@ static ZJProgressHUD *_shared;
 - (UIWindow *)overlayWindow
 {
     if (!_overlayWindow) {
-        UIWindow *window = [ZJProgressHUD keyWindow];
+        if (!_mainWindow) {
+            _mainWindow = [ZJProgressHUD keyWindow];
+        }
         _overlayWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         _overlayWindow.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin
                                 | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         _overlayWindow.backgroundColor = [UIColor clearColor];
         _overlayWindow.userInteractionEnabled = NO;
         
-        if (window) {
-            [window addSubview:_overlayWindow];
+        if (_mainWindow) {
+            [_mainWindow addSubview:_overlayWindow];
         }
     }
     return _overlayWindow;
@@ -366,12 +369,12 @@ static ZJProgressHUD *_shared;
         if (self.superview) {
             [self removeFromSuperview];
         }
-        [self.overlayWindow removeFromSuperview];
+        self.overlayWindow.hidden = YES;
+        self.overlayWindow.userInteractionEnabled = NO;
         _overlayWindow = nil;
         
-        UIWindow *window = [ZJProgressHUD keyWindow];
-        if (window) {
-            [window makeKeyAndVisible];
+        if (self.mainWindow) {
+            [self.mainWindow makeKeyAndVisible];
         }
     }
 }
