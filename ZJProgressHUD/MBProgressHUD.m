@@ -552,7 +552,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
     if (labelSize.width > maxWidth) {
         labelSize.height = labelSize.height*2;
         if (labelSize.width > label.bounds.size.width) {
-            labelSize.width = label.bounds.size.width;
+            labelSize.width = label.bounds.size.width + 2 * marginLeftRight;
         }
     }
 	labelSize.width = MIN(labelSize.width, maxWidth);
