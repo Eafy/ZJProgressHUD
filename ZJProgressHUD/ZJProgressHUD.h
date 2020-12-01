@@ -38,7 +38,10 @@
 /// 不同View之间的间隔值,默认6
 @property (nonatomic,assign) CGFloat paddingSpace;
 
-/// 移除
+/// 隐藏带动画
++ (void)hide;
+
+/// 移除（不带动画）
 + (void)dismiss;
 
 /// 显示带遮罩层提示框

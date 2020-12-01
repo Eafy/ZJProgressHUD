@@ -68,20 +68,22 @@ static ZJProgressHUD *_shared;
 
 - (void)hudWasHidden:(MBProgressHUD *)hud
 {
-    self.overlayWindow.userInteractionEnabled = NO;
-    if (self.isShowLan) {
-        self.isShowLan = NO;
-        if (_overlayWindow) {
-            _overlayWindow.transform = CGAffineTransformIdentity;
-        }
-    } 
-    
-    [self.overlayWindow resignKeyWindow];
     if (self.superview) {
         [self removeFromSuperview];
     }
-    [self.overlayWindow removeFromSuperview];
-    _overlayWindow = nil;
+    
+    if (_overlayWindow) {
+        self.overlayWindow.userInteractionEnabled = NO;
+        if (self.isShowLan) {
+            self.isShowLan = NO;
+            if (_overlayWindow) {
+                _overlayWindow.transform = CGAffineTransformIdentity;
+            }
+        }
+        [self.overlayWindow resignKeyWindow];
+        [self.overlayWindow removeFromSuperview];
+        _overlayWindow = nil;
+    }
     
     if (self.mainWindow) {
         [self.mainWindow makeKeyAndVisible];
@@ -91,9 +93,14 @@ static ZJProgressHUD *_shared;
 #pragma mark _______________________________________________
 #pragma mark 单例类--外部调用方法
 
-+ (void)dismiss
++ (void)hide
 {
     [[ZJProgressHUD shared] hideHubWithAnmotion:YES];
+}
+
++ (void)dismiss
+{
+    [[ZJProgressHUD shared] hudWasHidden:nil];
 }
 
 + (void)imHide
