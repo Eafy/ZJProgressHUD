@@ -426,9 +426,9 @@ static ZJProgressHUD *_shared;
     }
     self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
     
-    // 快速显示一个提示信息
-    [self configHubPara:self.hud];
     self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
+    [self configHubPara:self.hud];
+    
     self.hud.labelText = string;
     self.hud.delegate = nil;
     // 隐藏时候从父控件中移除
@@ -556,7 +556,7 @@ static ZJProgressHUD *_shared;
             
             if (!associateBundleURL) {
                 NSBundle *associateBunle = [NSBundle bundleWithURL:associateBundleURL];
-                associateBundleURL = [associateBunle URLForResource:bundleName withExtension:@"bundle"]; 
+                associateBundleURL = [associateBunle URLForResource:bundleName withExtension:@"bundle"];
             }
         }
     }
