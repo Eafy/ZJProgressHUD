@@ -40,9 +40,10 @@ static ZJProgressHUD *_shared;
             _shared.errorImage = [[ZJProgressHUD shared] imageNamed:@"icon_zj_hud_error"];
             _shared.font = [UIFont systemFontOfSize:16];
             _shared.titleColor = [UIColor whiteColor];
+            _shared.textSpace = 6.f;
             _shared.cornerRadius = 10.f;
             _shared.opacity = 0.8f;
-            _shared.textSpace = 6.f;
+            _shared.paddingSpace = 6.f;
             _shared.marginUpDown = 20.f;
             _shared.marginLeftRight = 20.f;
         });
@@ -58,7 +59,7 @@ static ZJProgressHUD *_shared;
     hud.cornerRadius = self.cornerRadius;
     hud.color = self.windowColor;
     hud.opacity = self.opacity;
-    hud.padding = self.textSpace;
+    hud.padding = self.paddingSpace;
     hud.marginUpDown = self.marginUpDown;
     hud.marginLeftRight = self.marginLeftRight;
 }
@@ -75,27 +76,24 @@ static ZJProgressHUD *_shared;
         }
     } 
     
-    [_overlayWindow resignKeyWindow];
-    [_overlayWindow removeFromSuperview];
+    [self.overlayWindow resignKeyWindow];
+    if (self.superview) {
+        [self removeFromSuperview];
+    }
+    [self.overlayWindow removeFromSuperview];
     _overlayWindow = nil;
+    
+    if (self.mainWindow) {
+        [self.mainWindow makeKeyAndVisible];
+    }
 }
 
 #pragma mark _______________________________________________
 #pragma mark 单例类--外部调用方法
 
-+ (void)hide
-{
-    [[ZJProgressHUD shared] hideHubWithAnmotion:YES];
-}
-
-+ (void)hideProcess
-{
-    [[ZJProgressHUD shared] hideProcessHubWithAnmotion:YES];
-}
-
 + (void)dismiss
 {
-    [[ZJProgressHUD shared] dismiss];
+    [[ZJProgressHUD shared] hideHubWithAnmotion:YES];
 }
 
 + (void)imHide
@@ -105,7 +103,7 @@ static ZJProgressHUD *_shared;
 
 + (void)imHideProcess
 {
-    [[ZJProgressHUD shared] hideProcessHubWithAnmotion:NO];
+    [[ZJProgressHUD shared] hideHubWithAnmotion:NO];
 }
 
 + (void)message:(NSString *)title
@@ -332,7 +330,7 @@ static ZJProgressHUD *_shared;
 
 + (ZJProgressHUD *)annularHubWithWithTitle:(NSString *)title view:(UIView *)view
 {
-    [ZJProgressHUD hideProcess];
+    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showAnnularHubWithWithTitle:title mark:NO view:view];
     return [ZJProgressHUD shared];
 }
@@ -401,20 +399,15 @@ static ZJProgressHUD *_shared;
 {
     self.hud.delegate = anmotion?self:nil;
     self.overlayWindow.userInteractionEnabled = NO;
-    [MBProgressHUD hideHUDForView:self animated:anmotion];
-}
-
-- (void)hideProcessHubWithAnmotion:(BOOL)anmotion
-{
-    self.hud.delegate = anmotion?self:nil;
-    self.overlayWindow.userInteractionEnabled = NO;
     if (self.subView) {
         [MBProgressHUD hideHUDForView:self.subView animated:anmotion];
-        self.subView = nil;
+        _subView = nil;
+    } else {
+        [MBProgressHUD hideHUDForView:self animated:anmotion];
     }
 }
 
-- (void)showHubMessageWithTitle:(NSString *)string mark:(BOOL)isAdd
+- (void)showHubMessageWithTitle:(NSString *)string mark:(BOOL)isMask
 {
     if (self.superview) {
         [self removeFromSuperview];
@@ -434,10 +427,10 @@ static ZJProgressHUD *_shared;
     // 隐藏时候从父控件中移除
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isAdd;
+    self.overlayWindow.userInteractionEnabled = isMask;
 }
 
-- (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isAdd view:(UIView *)view yOffset:(CGFloat)yOffset
+- (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isMask view:(UIView *)view yOffset:(CGFloat)yOffset
 {
     if (self.superview) {
         [self removeFromSuperview];
@@ -479,10 +472,10 @@ static ZJProgressHUD *_shared;
     // 隐藏时候从父控件中移除
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isAdd;
+    self.overlayWindow.userInteractionEnabled = isMask;
 }
 
-- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isAdd view:(UIView *)view
+- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMask view:(UIView *)view
 {
     if (self.superview) {
         [self removeFromSuperview];
@@ -510,7 +503,7 @@ static ZJProgressHUD *_shared;
     // 隐藏时候从父控件中移除
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isAdd;
+    self.overlayWindow.userInteractionEnabled = isMask;
 }
 
 - (void)showLan

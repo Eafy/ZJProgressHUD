@@ -248,7 +248,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 - (void)show:(BOOL)animated {
 	useAnimation = animated;
 	// If the grace time is set postpone the HUD display
-	if (self.graceTime > 0.0) {
+    if (self.graceTime > 0.0) {
+        if (graceTimer) {
+            [self.graceTimer invalidate];
+            graceTimer = nil;
+        }
 		self.graceTimer = [NSTimer scheduledTimerWithTimeInterval:self.graceTime target:self 
 						   selector:@selector(handleGraceTimer:) userInfo:nil repeats:NO];
 	} 
@@ -265,6 +269,10 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	if (self.minShowTime > 0.0 && showStarted) {
 		NSTimeInterval interv = [[NSDate date] timeIntervalSinceDate:showStarted];
 		if (interv < self.minShowTime) {
+            if (minShowTimer) {
+                [self.minShowTimer invalidate];
+                minShowTimer = nil;
+            }
 			self.minShowTimer = [NSTimer scheduledTimerWithTimeInterval:(self.minShowTime - interv) target:self 
 								selector:@selector(handleMinShowTimer:) userInfo:nil repeats:NO];
 			return;
@@ -531,7 +539,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	CGRect bounds = self.bounds;
 	
 	// Determine the total widt and height needed
-	CGFloat maxWidth = bounds.size.width - 2 * marginUpDown - 2 * marginLeftRight;
+	CGFloat maxWidth = bounds.size.width - 4 * marginLeftRight;
 	CGSize totalSize = CGSizeZero;
 	
 	CGRect indicatorF = indicator.bounds;
@@ -539,9 +547,13 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	totalSize.width = MAX(totalSize.width, indicatorF.size.width);
 	totalSize.height += indicatorF.size.height;
 	
+    [label sizeToFit];
 	CGSize labelSize = MB_TEXTSIZE(label.text, labelFont);
     if (labelSize.width > maxWidth) {
         labelSize.height = labelSize.height*2;
+        if (labelSize.width > label.bounds.size.width) {
+            labelSize.width = label.bounds.size.width;
+        }
     }
 	labelSize.width = MIN(labelSize.width, maxWidth);
 	totalSize.width = MAX(totalSize.width, labelSize.width);
@@ -550,7 +562,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         totalSize.height += self.padding;
 	}
 
-	CGFloat remainingHeight = bounds.size.height - totalSize.height - self.padding - 2 * marginUpDown - 2 * marginLeftRight;
+	CGFloat remainingHeight = bounds.size.height - totalSize.height - self.padding - 4 * marginUpDown;
 	CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
 	CGSize detailsLabelSize = MB_MULTILINE_TEXTSIZE(detailsLabel.text, detailsLabel.font, maxSize, detailsLabel.lineBreakMode);
 	totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
@@ -602,7 +614,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
     
 	if (totalSize.width < minSize.width) {
 		totalSize.width = minSize.width;
-	} 
+	}
 	if (totalSize.height < minSize.height) {
 		totalSize.height = minSize.height;
 	}

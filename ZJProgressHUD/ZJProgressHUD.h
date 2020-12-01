@@ -22,7 +22,7 @@
 @property (nonatomic,strong) UIFont * _Nullable font;
 /// 显示文字颜色，默认白色
 @property (nonatomic,strong) UIColor * _Nullable titleColor;
-/// 文字行间距，默认6
+/// 文字行间距，暂时无效
 @property (nonatomic,assign) CGFloat textSpace;
 
 /// 圆角，默认10
@@ -35,12 +35,8 @@
 @property (nonatomic,assign) CGFloat marginUpDown;
 /// 左右空余空间，默认20
 @property (nonatomic,assign) CGFloat marginLeftRight;
-
-/// 隐藏
-+ (void)hide;
-
-/// 影藏进度提示框
-+ (void)hideProcess;
+/// 不同View之间的间隔值,默认6
+@property (nonatomic,assign) CGFloat paddingSpace;
 
 /// 移除
 + (void)dismiss;
