@@ -342,7 +342,11 @@ typedef void (^MBProgressHUDCompletionBlock)(void);
  * The amount of space between the HUD edge and the HUD elements (labels, indicators or custom views). 
  * Defaults to 20.0
  */
-@property (assign) float margin;
+//@property (assign) float margin;
+
+@property (assign) float marginUpDown;
+
+@property (assign) float marginLeftRight;
 
 /**
  * The corner radius for the HUD
@@ -441,6 +445,10 @@ typedef void (^MBProgressHUDCompletionBlock)(void);
  * Force the HUD dimensions to be equal if possible. 
  */
 @property (assign, getter = isSquare) BOOL square;
+
+
+/// 行间距
+@property (assign) CGFloat padding;
 
 @end
 

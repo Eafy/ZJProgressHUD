@@ -22,6 +22,19 @@
 @property (nonatomic,strong) UIFont * _Nullable font;
 /// 显示文字颜色，默认白色
 @property (nonatomic,strong) UIColor * _Nullable titleColor;
+/// 文字行间距，默认6
+@property (nonatomic,assign) CGFloat textSpace;
+
+/// 圆角，默认10
+@property (nonatomic,assign) CGFloat cornerRadius;
+/// Window弹框背景颜色，一旦设置opacity将无效
+@property (nonatomic,strong) UIColor * _Nullable windowColor;
+/// Window弹框背景透明度，默认80%
+@property (nonatomic,assign) CGFloat opacity;
+/// 上下空余空间，默认20
+@property (nonatomic,assign) CGFloat marginUpDown;
+/// 左右空余空间，默认20
+@property (nonatomic,assign) CGFloat marginLeftRight;
 
 /// 隐藏
 + (void)hide;

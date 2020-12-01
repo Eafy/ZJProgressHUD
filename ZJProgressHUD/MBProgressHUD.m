@@ -48,8 +48,6 @@
 	#define kCFCoreFoundationVersionNumber_iOS_8_0 1129.15
 #endif
 
-
-static const CGFloat kPadding = 6.f;    //间距
 static const CGFloat kLabelFontSize = 16.f;
 static const CGFloat kDetailsLabelFontSize = 12.f;
 
@@ -90,7 +88,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 @synthesize yOffset;
 @synthesize minSize;
 @synthesize square;
-@synthesize margin;
+@synthesize marginUpDown;
+@synthesize marginLeftRight;
 @synthesize dimBackground;
 @synthesize graceTime;
 @synthesize minShowTime;
@@ -181,13 +180,14 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		self.yOffset = 0.0f;
 		self.dimBackground = NO;
         self.dimBackgroundAlpha = 0.75;
-		self.margin = 20.0f;
+		self.marginUpDown = 20.0f;
 		self.cornerRadius = 10.0f;
 		self.graceTime = 0.0f;
 		self.minShowTime = 0.0f;
 		self.removeFromSuperViewOnHide = NO;
 		self.minSize = CGSizeZero;
 		self.square = NO;
+        self.padding = 6.f;
 		self.contentMode = UIViewContentModeCenter;
 		self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin
 								| UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
@@ -531,7 +531,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	CGRect bounds = self.bounds;
 	
 	// Determine the total widt and height needed
-	CGFloat maxWidth = bounds.size.width - 4 * margin;
+	CGFloat maxWidth = bounds.size.width - 2 * marginUpDown - 2 * marginLeftRight;
 	CGSize totalSize = CGSizeZero;
 	
 	CGRect indicatorF = indicator.bounds;
@@ -547,23 +547,23 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	totalSize.width = MAX(totalSize.width, labelSize.width);
     totalSize.height += labelSize.height;
 	if (labelSize.height > 0.f && indicatorF.size.height > 0.f) {
-		totalSize.height += kPadding;
+        totalSize.height += self.padding;
 	}
 
-	CGFloat remainingHeight = bounds.size.height - totalSize.height - kPadding - 4 * margin; 
+	CGFloat remainingHeight = bounds.size.height - totalSize.height - self.padding - 2 * marginUpDown - 2 * marginLeftRight;
 	CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
 	CGSize detailsLabelSize = MB_MULTILINE_TEXTSIZE(detailsLabel.text, detailsLabel.font, maxSize, detailsLabel.lineBreakMode);
 	totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
 	totalSize.height += detailsLabelSize.height;
 	if (detailsLabelSize.height > 0.f && (indicatorF.size.height > 0.f || labelSize.height > 0.f)) {
-		totalSize.height += kPadding;
+		totalSize.height += self.padding;
 	}
 	
-	totalSize.width += 2 * margin;
-	totalSize.height += 2 * margin;
+	totalSize.width += 2 * marginLeftRight;
+	totalSize.height += 2 * marginUpDown;
 	
 	// Position elements
-	CGFloat yPos = round(((bounds.size.height - totalSize.height) / 2)) + margin + yOffset;
+	CGFloat yPos = round(((bounds.size.height - totalSize.height) / 2)) + marginUpDown + yOffset;
 	CGFloat xPos = xOffset;
 	indicatorF.origin.y = yPos;
 	indicatorF.origin.x = round((bounds.size.width - indicatorF.size.width) / 2) + xPos;
@@ -571,7 +571,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	yPos += indicatorF.size.height;
 	
 	if (labelSize.height > 0.f && indicatorF.size.height > 0.f) {
-		yPos += kPadding;
+		yPos += self.padding;
 	}
 	CGRect labelF;
 	labelF.origin.y = yPos;
@@ -581,7 +581,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	yPos += labelF.size.height;
 	
 	if (detailsLabelSize.height > 0.f && (indicatorF.size.height > 0.f || labelSize.height > 0.f)) {
-		yPos += kPadding;
+		yPos += self.padding;
 	}
 	CGRect detailsLabelF;
 	detailsLabelF.origin.y = yPos;
@@ -592,10 +592,10 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	// Enforce minsize and quare rules
 	if (square) {
 		CGFloat max = MAX(totalSize.width, totalSize.height);
-		if (max <= bounds.size.width - 2 * margin) {
+		if (max <= bounds.size.width - 2 * marginLeftRight) {
 			totalSize.width = max;
 		}
-		if (max <= bounds.size.height - 2 * margin) {
+		if (max <= bounds.size.height - 2 * marginUpDown) {
 			totalSize.height = max;
 		}
 	}

@@ -40,9 +40,27 @@ static ZJProgressHUD *_shared;
             _shared.errorImage = [[ZJProgressHUD shared] imageNamed:@"icon_zj_hud_error"];
             _shared.font = [UIFont systemFontOfSize:16];
             _shared.titleColor = [UIColor whiteColor];
+            _shared.cornerRadius = 10.f;
+            _shared.opacity = 0.8f;
+            _shared.textSpace = 6.f;
+            _shared.marginUpDown = 20.f;
+            _shared.marginLeftRight = 20.f;
         });
     }
     return _shared;
+}
+
+- (void)configHubPara:(MBProgressHUD *)hud
+{
+    if (!hud) return;
+    hud.labelFont = self.font;
+    hud.labelColor = self.titleColor;
+    hud.cornerRadius = self.cornerRadius;
+    hud.color = self.windowColor;
+    hud.opacity = self.opacity;
+    hud.padding = self.textSpace;
+    hud.marginUpDown = self.marginUpDown;
+    hud.marginLeftRight = self.marginLeftRight;
 }
 
 #pragma mark - MBProgressHUDDelegate
@@ -409,8 +427,8 @@ static ZJProgressHUD *_shared;
     self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
     
     // 快速显示一个提示信息
+    [self configHubPara:self.hud];
     self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    self.hud.labelFont = self.font;
     self.hud.labelText = string;
     self.hud.delegate = nil;
     // 隐藏时候从父控件中移除
@@ -450,8 +468,8 @@ static ZJProgressHUD *_shared;
             self.hud.customView = [[UIImageView alloc] initWithImage:self.errorImage];
         }
     }
+    [self configHubPara:self.hud];
     self.hud.mode = MBProgressHUDModeCustomView;
-    self.hud.labelFont = self.font;
     self.hud.labelText = title;
     self.hud.delegate = self;
     self.hud.yOffset = yOffset;
@@ -482,10 +500,9 @@ static ZJProgressHUD *_shared;
         self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
     }
     
+    [self configHubPara:self.hud];
     self.hud.mode = MBProgressHUDModeAnnularDeterminate;
-    self.hud.labelFont = [UIFont systemFontOfSize:14];
     self.hud.labelText = title;
-    self.hud.labelColor = self.titleColor;
     self.hud.progress = 0;
     self.hud.color = [UIColor clearColor];
     self.hud.delegate = self;
