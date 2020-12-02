@@ -140,79 +140,79 @@ static ZJProgressHUD *_shared;
 + (void)loading
 {
     [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:YES];
 }
 
 + (void)lanLoading
 {
     [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:YES];
 }
 
 + (void)loadingForNoMark
 {
     [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:NO];
 }
 
 + (void)lanLoadingForNoMark
 {
     [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:NO];
 }
 
 + (void)setting
 {
     [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:YES];
 }
 
 + (void)lanSetting
 {
     [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:YES];
 }
 
 + (void)settingForNoMark
 {
     [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:NO];
 }
 
 + (void)lanSettingForNoMark
 {
     [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:NO];
 }
 
 + (void)submitting
 {
     [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:YES];
 }
 
 + (void)lanSubmitting
 {
     [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:YES];
 }
 
 + (void)submittingForNoMark
 {
     [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:NO];
 }
 
 + (void)lanSubmittingForNoMark
 {
     [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:NO];
 }
 
 + (void)statusWithTitle:(NSString *)title duration:(NSTimeInterval)duration
