@@ -72,6 +72,10 @@ static ZJProgressHUD *_shared;
         [self removeFromSuperview];
     }
     
+    if (self.mainWindow) {
+        [self.mainWindow makeKeyAndVisible];
+    }
+    
     if (_overlayWindow) {
         self.overlayWindow.userInteractionEnabled = NO;
         if (self.isShowLan) {
@@ -81,10 +85,6 @@ static ZJProgressHUD *_shared;
         [self.overlayWindow resignKeyWindow];
         [self.overlayWindow removeFromSuperview];
         _overlayWindow = nil;
-    }
-    
-    if (self.mainWindow) {
-        [self.mainWindow makeKeyAndVisible];
     }
 }
 
@@ -390,13 +390,14 @@ static ZJProgressHUD *_shared;
         if (self.superview) {
             [self removeFromSuperview];
         }
-        self.overlayWindow.hidden = YES;
-        self.overlayWindow.userInteractionEnabled = NO;
-        _overlayWindow = nil;
         
         if (self.mainWindow) {
             [self.mainWindow makeKeyAndVisible];
         }
+        
+        self.overlayWindow.hidden = YES;
+        self.overlayWindow.userInteractionEnabled = NO;
+        _overlayWindow = nil;
     }
 }
 
