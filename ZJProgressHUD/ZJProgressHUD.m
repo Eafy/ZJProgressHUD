@@ -76,10 +76,8 @@ static ZJProgressHUD *_shared;
         self.overlayWindow.userInteractionEnabled = NO;
         if (self.isShowLan) {
             self.isShowLan = NO;
-            if (_overlayWindow) {
-                _overlayWindow.transform = CGAffineTransformIdentity;
-            }
         }
+        _overlayWindow.transform = CGAffineTransformIdentity;
         [self.overlayWindow resignKeyWindow];
         [self.overlayWindow removeFromSuperview];
         _overlayWindow = nil;
