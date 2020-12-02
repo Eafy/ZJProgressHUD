@@ -437,7 +437,7 @@ static ZJProgressHUD *_shared;
     self.overlayWindow.userInteractionEnabled = isMask;
 }
 
-- (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isMask view:(UIView *)view yOffset:(CGFloat)yOffset
+- (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isMark view:(UIView *)view yOffset:(CGFloat)yOffset
 {
     if (self.superview) {
         [self removeFromSuperview];
@@ -479,10 +479,10 @@ static ZJProgressHUD *_shared;
     // 隐藏时候从父控件中移除
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMask;
+    self.overlayWindow.userInteractionEnabled = isMark;
 }
 
-- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMask view:(UIView *)view
+- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMark view:(UIView *)view
 {
     if (self.superview) {
         [self removeFromSuperview];
@@ -510,7 +510,7 @@ static ZJProgressHUD *_shared;
     // 隐藏时候从父控件中移除
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMask;
+    self.overlayWindow.userInteractionEnabled = isMark;
 }
 
 - (void)showLan
