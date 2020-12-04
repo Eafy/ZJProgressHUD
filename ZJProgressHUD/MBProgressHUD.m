@@ -602,7 +602,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	detailsLabel.frame = detailsLabelF;
 	
 	// Enforce minsize and quare rules
-	if (square) {
+	if (square && totalSize.width <= totalSize.height * 3) {
 		CGFloat max = MAX(totalSize.width, totalSize.height);
 		if (max <= bounds.size.width - 2 * marginLeftRight) {
 			totalSize.width = max;

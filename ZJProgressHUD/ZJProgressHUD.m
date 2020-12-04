@@ -44,8 +44,9 @@ static ZJProgressHUD *_shared;
             _shared.cornerRadius = 10.f;
             _shared.opacity = 0.8f;
             _shared.paddingSpace = 6.f;
-            _shared.marginUpDown = 20.f;
-            _shared.marginLeftRight = 20.f;
+            _shared.marginUpDown = 12.f;
+            _shared.marginLeftRight = 12.f;
+            _shared.isSquare = YES;
         });
     }
     return _shared;
@@ -62,6 +63,8 @@ static ZJProgressHUD *_shared;
     hud.padding = self.paddingSpace;
     hud.marginUpDown = self.marginUpDown;
     hud.marginLeftRight = self.marginLeftRight;
+    hud.minSize = self.minSize;
+    hud.square = self.isSquare;
 }
 
 #pragma mark - MBProgressHUDDelegate
@@ -72,22 +75,24 @@ static ZJProgressHUD *_shared;
         [self removeFromSuperview];
     }
     
+    if (self.mainWindow) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.mainWindow makeKeyAndVisible];
+        });
+    }
+    
     if (_overlayWindow) {
         self.overlayWindow.userInteractionEnabled = NO;
         if (self.isShowLan) {
             self.isShowLan = NO;
-            if (_overlayWindow) {
-                _overlayWindow.transform = CGAffineTransformIdentity;
-            }
         }
+        _overlayWindow.transform = CGAffineTransformIdentity;
         [self.overlayWindow resignKeyWindow];
         [self.overlayWindow removeFromSuperview];
         _overlayWindow = nil;
     }
     
-    if (self.mainWindow) {
-        [self.mainWindow makeKeyAndVisible];
-    }
+    _hud = nil;
 }
 
 #pragma mark _______________________________________________
@@ -100,17 +105,16 @@ static ZJProgressHUD *_shared;
 
 + (void)dismiss
 {
+    if ([ZJProgressHUD shared].hud) {
+        [ZJProgressHUD shared].hud.delegate = nil;
+        if ([ZJProgressHUD shared].subView) {
+            [MBProgressHUD hideHUDForView:[ZJProgressHUD shared].subView animated:NO];
+            [ZJProgressHUD shared].subView = nil;
+        } else {
+            [MBProgressHUD hideHUDForView:[ZJProgressHUD shared] animated:NO];
+        }
+    }
     [[ZJProgressHUD shared] hudWasHidden:nil];
-}
-
-+ (void)imHide
-{
-    [[ZJProgressHUD shared] hideHubWithAnmotion:NO];
-}
-
-+ (void)imHideProcess
-{
-    [[ZJProgressHUD shared] hideHubWithAnmotion:NO];
 }
 
 + (void)message:(NSString *)title
@@ -126,93 +130,79 @@ static ZJProgressHUD *_shared;
 
 + (void)messageForNoMark:(NSString *)title
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title mark:NO];
 }
 
 + (void)lanMessageForNoMark:(NSString *)title
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title mark:NO];
 }
 
 + (void)loading
 {
-    [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:YES];
 }
 
 + (void)lanLoading
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:YES];
 }
 
 + (void)loadingForNoMark
 {
-    [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:NO];
 }
 
 + (void)lanLoadingForNoMark
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Loading...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"加载中...", nil) mark:NO];
 }
 
 + (void)setting
 {
-    [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:YES];
 }
 
 + (void)lanSetting
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:YES];
 }
 
 + (void)settingForNoMark
 {
-    [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:NO];
 }
 
 + (void)lanSettingForNoMark
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"Setting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"设置中...", nil) mark:NO];
 }
 
 + (void)submitting
 {
-    [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:YES];
 }
 
 + (void)lanSubmitting
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:YES];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:YES];
 }
 
 + (void)submittingForNoMark
 {
-    [ZJProgressHUD imHide];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:NO];
 }
 
 + (void)lanSubmittingForNoMark
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
-    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"submitting...", nil) mark:NO];
+    [[ZJProgressHUD shared] showHubMessageWithTitle:NSLocalizedString(@"提交中...", nil) mark:NO];
 }
 
 + (void)statusWithTitle:(NSString *)title duration:(NSTimeInterval)duration
@@ -222,122 +212,103 @@ static ZJProgressHUD *_shared;
 
 + (void)lanStatusWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:0];
 }
 
 + (void)statusWithTitle:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:YES view:nil yOffset:yOffset];
 }
 
 + (void)statusWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration view:(UIView *)view
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
 }
 
 + (void)lanStatusWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration view:(UIView *)view
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
 }
 
 + (void)statusWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration view:(UIView *)view yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:0 mark:NO view:view yOffset:0];
 }
 
 + (void)successWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:0];
 }
 
 + (void)lanSuccessWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:0];
 }
 
 + (void)successWithTitle:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:YES view:nil yOffset:yOffset];
 }
 
 + (void)successWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:0];
 }
 
 + (void)lanSuccessWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:0];
 }
 
 + (void)successWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:yOffset];
 }
 
 + (void)lanSuccessWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:1 mark:NO view:nil yOffset:yOffset];
 }
 
 + (void)errorWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:YES view:nil yOffset:0];
 }
 
 + (void)errorWithTitle:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:YES view:nil yOffset:yOffset];
 }
 
 + (void)lanErrorWithTitle:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
 }
 
 + (void)errorWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
 }
 
 + (void)lanErrorWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showLan];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:0];
 }
 
 + (void)errorWithTitleForNoMark:(NSString *)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:yOffset];
 }
 
 + (ZJProgressHUD *)annularHubWithWithTitle:(NSString *)title view:(UIView *)view
 {
-    [ZJProgressHUD imHide];
     [[ZJProgressHUD shared] showAnnularHubWithWithTitle:title mark:NO view:view];
     return [ZJProgressHUD shared];
 }
@@ -386,135 +357,141 @@ static ZJProgressHUD *_shared;
     return _overlayWindow;
 }
 
-- (void)dismiss
-{
-    if (_overlayWindow) {
-        if (self.superview) {
-            [self removeFromSuperview];
-        }
-        self.overlayWindow.hidden = YES;
-        self.overlayWindow.userInteractionEnabled = NO;
-        _overlayWindow = nil;
-        
-        if (self.mainWindow) {
-            [self.mainWindow makeKeyAndVisible];
-        }
-    }
-}
-
 - (void)hideHubWithAnmotion:(BOOL)anmotion
 {
-    self.hud.delegate = anmotion?self:nil;
-    self.overlayWindow.userInteractionEnabled = NO;
-    if (self.subView) {
-        [MBProgressHUD hideHUDForView:self.subView animated:anmotion];
-        _subView = nil;
-    } else {
-        [MBProgressHUD hideHUDForView:self animated:anmotion];
-    }
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        weakSelf.hud.delegate = anmotion?weakSelf:nil;
+        if (weakSelf.subView) {
+            [MBProgressHUD hideHUDForView:weakSelf.subView animated:anmotion];
+            [ZJProgressHUD shared].subView = nil;
+        } else {
+            [MBProgressHUD hideHUDForView:weakSelf animated:anmotion];
+        }
+    });
 }
 
 - (void)showHubMessageWithTitle:(NSString *)string mark:(BOOL)isMask
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    [self.overlayWindow addSubview:self];
-    [self.overlayWindow makeKeyAndVisible];
-    if (self.isShowLan) {
-        self.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    }
-    self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
-    
-    self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    [self configHubPara:self.hud];
-    
-    self.hud.labelText = string;
-    self.hud.delegate = nil;
-    // 隐藏时候从父控件中移除
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMask;
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (weakSelf.hud) {
+            [ZJProgressHUD dismiss];
+        }
+        
+        if (weakSelf.superview) {
+            [weakSelf removeFromSuperview];
+        }
+        [weakSelf.overlayWindow addSubview:weakSelf];
+        [weakSelf.overlayWindow makeKeyAndVisible];
+        if (weakSelf.isShowLan) {
+            weakSelf.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+        }
+        weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
+        
+        weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        [weakSelf configHubPara:weakSelf.hud];
+        
+        weakSelf.hud.labelText = string;
+        weakSelf.hud.delegate = nil;
+        // 隐藏时候从父控件中移除
+        weakSelf.hud.removeFromSuperViewOnHide = YES;
+        weakSelf.hud.dimBackground = NO;   // YES代表需要蒙版效果
+        weakSelf.overlayWindow.userInteractionEnabled = isMask;
+    });
 }
 
-- (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isMask view:(UIView *)view yOffset:(CGFloat)yOffset
+- (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isMark view:(UIView *)view yOffset:(CGFloat)yOffset
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    if (view) {
-        [view addSubview:self];
-        if (self.isShowLan) {
-            self.transform = CGAffineTransformMakeRotation(M_PI_2);
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (weakSelf.hud) {
+            [ZJProgressHUD dismiss];
         }
-        self.center = CGPointMake(kScreenHeight/2.0, kScreenWidth/2.0);
-    } else {
-        [self.overlayWindow addSubview:self];
-        [self.overlayWindow makeKeyAndVisible];
-        if (self.isShowLan) {
-            self.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+        
+        if (weakSelf.superview) {
+            [weakSelf removeFromSuperview];
         }
-        self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
-    }
-    
-    // 快速显示一个提示信息
-    self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    if (suState == 1) {
-        if (self.successImage) {
-            self.hud.customView = [[UIImageView alloc] initWithImage:self.successImage];
+        if (view) {
+            [view addSubview:weakSelf];
+            if (weakSelf.isShowLan) {
+                weakSelf.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            weakSelf.center = CGPointMake(kScreenHeight/2.0, kScreenWidth/2.0);
+        } else {
+            [weakSelf.overlayWindow addSubview:weakSelf];
+            [weakSelf.overlayWindow makeKeyAndVisible];
+            if (weakSelf.isShowLan) {
+                weakSelf.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
         }
-    } else if (suState == 2) {
-        if (self.errorImage) {
-            self.hud.customView = [[UIImageView alloc] initWithImage:self.errorImage];
+        
+        // 快速显示一个提示信息
+        weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        if (suState == 1) {
+            if (weakSelf.successImage) {
+                weakSelf.hud.customView = [[UIImageView alloc] initWithImage:weakSelf.successImage];
+            }
+        } else if (suState == 2) {
+            if (weakSelf.errorImage) {
+                weakSelf.hud.customView = [[UIImageView alloc] initWithImage:weakSelf.errorImage];
+            }
         }
-    }
-    [self configHubPara:self.hud];
-    self.hud.mode = MBProgressHUDModeCustomView;
-    self.hud.labelText = title;
-    self.hud.delegate = self;
-    self.hud.yOffset = yOffset;
-    [self.hud show:YES];
-    [self.hud hide:YES afterDelay:duration];
-    
-    // 隐藏时候从父控件中移除
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMask;
+        [weakSelf configHubPara:weakSelf.hud];
+        weakSelf.hud.mode = MBProgressHUDModeCustomView;
+        weakSelf.hud.labelText = title;
+        weakSelf.hud.delegate = weakSelf;
+        weakSelf.hud.yOffset = yOffset;
+        [weakSelf.hud show:YES];
+        [weakSelf.hud hide:YES afterDelay:duration];
+        
+        // 隐藏时候从父控件中移除
+        weakSelf.hud.removeFromSuperViewOnHide = YES;
+        weakSelf.hud.dimBackground = NO;   // YES代表需要蒙版效果
+        weakSelf.overlayWindow.userInteractionEnabled = isMark;
+    });
 }
 
-- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMask view:(UIView *)view
+- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMark view:(UIView *)view
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    if (view) {
-        self.subView = view;
-        self.hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    } else {
-        [self.overlayWindow addSubview:self];
-        [self.overlayWindow makeKeyAndVisible];
-        if (self.isShowLan) {
-            self.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (weakSelf.hud) {
+            [ZJProgressHUD dismiss];
         }
-        self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
-        self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    }
-    
-    [self configHubPara:self.hud];
-    self.hud.mode = MBProgressHUDModeAnnularDeterminate;
-    self.hud.labelText = title;
-    self.hud.progress = 0;
-    self.hud.color = [UIColor clearColor];
-    self.hud.delegate = self;
-    
-    // 隐藏时候从父控件中移除
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMask;
+        
+        if (weakSelf.superview) {
+            [weakSelf removeFromSuperview];
+        }
+        if (view) {
+            weakSelf.subView = view;
+            weakSelf.hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+        } else {
+            [weakSelf.overlayWindow addSubview:weakSelf];
+            [weakSelf.overlayWindow makeKeyAndVisible];
+            if (weakSelf.isShowLan) {
+                weakSelf.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
+            weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        }
+        
+        [weakSelf configHubPara:weakSelf.hud];
+        weakSelf.hud.mode = MBProgressHUDModeAnnularDeterminate;
+        weakSelf.hud.labelText = title;
+        weakSelf.hud.progress = 0;
+        weakSelf.hud.color = [UIColor clearColor];
+        weakSelf.hud.delegate = weakSelf;
+        
+        // 隐藏时候从父控件中移除
+        weakSelf.hud.removeFromSuperViewOnHide = YES;
+        weakSelf.hud.dimBackground = NO;   // YES代表需要蒙版效果
+        weakSelf.overlayWindow.userInteractionEnabled = isMark;
+    });
 }
 
-- (void)showLan
-{
+- (void)showLan {
     _isShowLan = YES;
 }
 

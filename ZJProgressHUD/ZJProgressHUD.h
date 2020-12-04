@@ -31,12 +31,17 @@
 @property (nonatomic,strong) UIColor * _Nullable windowColor;
 /// Window弹框背景透明度，默认80%
 @property (nonatomic,assign) CGFloat opacity;
-/// 上下空余空间，默认20
+/// 上下空余空间，默认12
 @property (nonatomic,assign) CGFloat marginUpDown;
-/// 左右空余空间，默认20
+/// 左右空余空间，默认12
 @property (nonatomic,assign) CGFloat marginLeftRight;
 /// 不同View之间的间隔值,默认6
 @property (nonatomic,assign) CGFloat paddingSpace;
+
+/// 是否显示正方形（默认YES），宽度是高度3倍以上时无效
+@property (nonatomic,assign) BOOL isSquare;
+/// 最小宽高
+@property (nonatomic,assign) CGSize minSize;
 
 /// 隐藏带动画
 + (void)hide;
