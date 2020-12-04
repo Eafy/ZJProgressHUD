@@ -23,6 +23,7 @@
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) UIView *subView;
 @property (nonatomic, assign) BOOL isShowLan;
+@property (nonatomic, assign) BOOL isWillShow;
 
 @property (nonatomic, strong) NSString *defaultBundleImagePath;
 
@@ -73,7 +74,9 @@ static ZJProgressHUD *_shared;
     }
     
     if (self.mainWindow) {
-        [self.mainWindow makeKeyAndVisible];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.mainWindow makeKeyAndVisible];
+        });
     }
     
     if (_overlayWindow) {
@@ -98,6 +101,7 @@ static ZJProgressHUD *_shared;
 
 + (void)dismiss
 {
+    [ZJProgressHUD shared].isWillShow = NO;
     [[ZJProgressHUD shared] hudWasHidden:nil];
 }
 
@@ -384,132 +388,138 @@ static ZJProgressHUD *_shared;
     return _overlayWindow;
 }
 
-- (void)dismiss
-{
-    if (_overlayWindow) {
-        if (self.superview) {
-            [self removeFromSuperview];
-        }
-        
-        if (self.mainWindow) {
-            [self.mainWindow makeKeyAndVisible];
-        }
-        
-        self.overlayWindow.hidden = YES;
-        self.overlayWindow.userInteractionEnabled = NO;
-        _overlayWindow = nil;
-    }
-}
-
 - (void)hideHubWithAnmotion:(BOOL)anmotion
 {
-    self.hud.delegate = anmotion?self:nil;
-    self.overlayWindow.userInteractionEnabled = NO;
-    if (self.subView) {
-        [MBProgressHUD hideHUDForView:self.subView animated:anmotion];
-        _subView = nil;
-    } else {
-        [MBProgressHUD hideHUDForView:self animated:anmotion];
-    }
+    self.isWillShow = NO;
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (weakSelf.isWillShow) return;
+        
+        weakSelf.hud.delegate = anmotion?weakSelf:nil;
+        if (weakSelf.subView) {
+            [MBProgressHUD hideHUDForView:weakSelf.subView animated:anmotion];
+            [ZJProgressHUD shared].subView = nil;
+        } else {
+            [MBProgressHUD hideHUDForView:weakSelf animated:anmotion];
+        }
+    });
 }
 
 - (void)showHubMessageWithTitle:(NSString *)string mark:(BOOL)isMask
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    [self.overlayWindow addSubview:self];
-    [self.overlayWindow makeKeyAndVisible];
-    if (self.isShowLan) {
-        self.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    }
-    self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
-    
-    self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    [self configHubPara:self.hud];
-    
-    self.hud.labelText = string;
-    self.hud.delegate = nil;
-    // 隐藏时候从父控件中移除
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMask;
+    self.isWillShow = YES;
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!weakSelf.isWillShow) return;
+        
+        if (weakSelf.superview) {
+            [weakSelf removeFromSuperview];
+        }
+        [weakSelf.overlayWindow addSubview:weakSelf];
+        [weakSelf.overlayWindow makeKeyAndVisible];
+        if (weakSelf.isShowLan) {
+            weakSelf.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+        }
+        weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
+        
+        weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        [weakSelf configHubPara:weakSelf.hud];
+        
+        weakSelf.hud.labelText = string;
+        weakSelf.hud.delegate = nil;
+        // 隐藏时候从父控件中移除
+        weakSelf.hud.removeFromSuperViewOnHide = YES;
+        weakSelf.hud.dimBackground = NO;   // YES代表需要蒙版效果
+        weakSelf.overlayWindow.userInteractionEnabled = isMask;
+    });
 }
 
 - (void)showHubMessageWithTitle:(NSString *)title duration:(NSTimeInterval)duration state:(NSInteger)suState mark:(BOOL)isMark view:(UIView *)view yOffset:(CGFloat)yOffset
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    if (view) {
-        [view addSubview:self];
-        if (self.isShowLan) {
-            self.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.isWillShow = YES;
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!weakSelf.isWillShow) return;
+        
+        if (weakSelf.superview) {
+            [weakSelf removeFromSuperview];
         }
-        self.center = CGPointMake(kScreenHeight/2.0, kScreenWidth/2.0);
-    } else {
-        [self.overlayWindow addSubview:self];
-        [self.overlayWindow makeKeyAndVisible];
-        if (self.isShowLan) {
-            self.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+        if (view) {
+            [view addSubview:weakSelf];
+            if (weakSelf.isShowLan) {
+                weakSelf.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            weakSelf.center = CGPointMake(kScreenHeight/2.0, kScreenWidth/2.0);
+        } else {
+            [weakSelf.overlayWindow addSubview:weakSelf];
+            [weakSelf.overlayWindow makeKeyAndVisible];
+            if (weakSelf.isShowLan) {
+                weakSelf.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
         }
-        self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
-    }
-    
-    // 快速显示一个提示信息
-    self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    if (suState == 1) {
-        if (self.successImage) {
-            self.hud.customView = [[UIImageView alloc] initWithImage:self.successImage];
+        
+        // 快速显示一个提示信息
+        weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        if (suState == 1) {
+            if (weakSelf.successImage) {
+                weakSelf.hud.customView = [[UIImageView alloc] initWithImage:weakSelf.successImage];
+            }
+        } else if (suState == 2) {
+            if (weakSelf.errorImage) {
+                weakSelf.hud.customView = [[UIImageView alloc] initWithImage:weakSelf.errorImage];
+            }
         }
-    } else if (suState == 2) {
-        if (self.errorImage) {
-            self.hud.customView = [[UIImageView alloc] initWithImage:self.errorImage];
-        }
-    }
-    [self configHubPara:self.hud];
-    self.hud.mode = MBProgressHUDModeCustomView;
-    self.hud.labelText = title;
-    self.hud.delegate = self;
-    self.hud.yOffset = yOffset;
-    [self.hud show:YES];
-    [self.hud hide:YES afterDelay:duration];
-    
-    // 隐藏时候从父控件中移除
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMark;
+        [weakSelf configHubPara:weakSelf.hud];
+        weakSelf.hud.mode = MBProgressHUDModeCustomView;
+        weakSelf.hud.labelText = title;
+        weakSelf.hud.delegate = weakSelf;
+        weakSelf.hud.yOffset = yOffset;
+        [weakSelf.hud show:YES];
+        [weakSelf.hud hide:YES afterDelay:duration];
+        
+        // 隐藏时候从父控件中移除
+        weakSelf.hud.removeFromSuperViewOnHide = YES;
+        weakSelf.hud.dimBackground = NO;   // YES代表需要蒙版效果
+        weakSelf.overlayWindow.userInteractionEnabled = isMark;
+    });
 }
 
 - (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMark view:(UIView *)view
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    if (view) {
-        self.subView = view;
-        self.hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    } else {
-        [self.overlayWindow addSubview:self];
-        [self.overlayWindow makeKeyAndVisible];
-        if (self.isShowLan) {
-            self.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.isWillShow = YES;
+    __weak ZJProgressHUD *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!weakSelf.isWillShow) return;
+        
+        if (weakSelf.superview) {
+            [weakSelf removeFromSuperview];
         }
-        self.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
-        self.hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-    }
-    
-    [self configHubPara:self.hud];
-    self.hud.mode = MBProgressHUDModeAnnularDeterminate;
-    self.hud.labelText = title;
-    self.hud.progress = 0;
-    self.hud.color = [UIColor clearColor];
-    self.hud.delegate = self;
-    
-    // 隐藏时候从父控件中移除
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.dimBackground = NO;   // YES代表需要蒙版效果
-    self.overlayWindow.userInteractionEnabled = isMark;
+        if (view) {
+            weakSelf.subView = view;
+            weakSelf.hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+        } else {
+            [weakSelf.overlayWindow addSubview:weakSelf];
+            [weakSelf.overlayWindow makeKeyAndVisible];
+            if (weakSelf.isShowLan) {
+                weakSelf.overlayWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
+            weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        }
+        
+        [weakSelf configHubPara:weakSelf.hud];
+        weakSelf.hud.mode = MBProgressHUDModeAnnularDeterminate;
+        weakSelf.hud.labelText = title;
+        weakSelf.hud.progress = 0;
+        weakSelf.hud.color = [UIColor clearColor];
+        weakSelf.hud.delegate = weakSelf;
+        
+        // 隐藏时候从父控件中移除
+        weakSelf.hud.removeFromSuperViewOnHide = YES;
+        weakSelf.hud.dimBackground = NO;   // YES代表需要蒙版效果
+        weakSelf.overlayWindow.userInteractionEnabled = isMark;
+    });
 }
 
 - (void)showLan
