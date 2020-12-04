@@ -45,8 +45,9 @@ static ZJProgressHUD *_shared;
             _shared.cornerRadius = 10.f;
             _shared.opacity = 0.8f;
             _shared.paddingSpace = 6.f;
-            _shared.marginUpDown = 20.f;
-            _shared.marginLeftRight = 20.f;
+            _shared.marginUpDown = 12.f;
+            _shared.marginLeftRight = 12.f;
+            _shared.isSquare = YES;
         });
     }
     return _shared;
@@ -63,6 +64,8 @@ static ZJProgressHUD *_shared;
     hud.padding = self.paddingSpace;
     hud.marginUpDown = self.marginUpDown;
     hud.marginLeftRight = self.marginLeftRight;
+    hud.minSize = self.minSize;
+    hud.square = self.isSquare;
 }
 
 #pragma mark - MBProgressHUDDelegate
