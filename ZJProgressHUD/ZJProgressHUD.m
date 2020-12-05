@@ -75,12 +75,6 @@ static ZJProgressHUD *_shared;
         [self removeFromSuperview];
     }
     
-    if (self.mainWindow) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.mainWindow makeKeyAndVisible];
-        });
-    }
-    
     if (_overlayWindow) {
         self.overlayWindow.userInteractionEnabled = NO;
         if (self.isShowLan) {
@@ -90,6 +84,16 @@ static ZJProgressHUD *_shared;
         [self.overlayWindow resignKeyWindow];
         [self.overlayWindow removeFromSuperview];
         _overlayWindow = nil;
+    }
+    
+    if (self.mainWindow) {
+        if (NSThread.isMainThread) {
+            [self.mainWindow makeKeyAndVisible];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.mainWindow makeKeyAndVisible];
+            });
+        }
     }
     
     _hud = nil;
@@ -328,13 +332,19 @@ static ZJProgressHUD *_shared;
 
 + (UIWindow *)keyWindow
 {
-    UIWindow *keyWindow = [[[UIApplication sharedApplication].windows sortedArrayUsingComparator:^NSComparisonResult(UIWindow *win1, UIWindow *win2) {
-        return win1.windowLevel < win2.windowLevel || !win1.isOpaque;
-    }] lastObject];
+    NSArray *windowArray = [[UIApplication sharedApplication].windows sortedArrayUsingComparator:^NSComparisonResult(UIWindow *win1, UIWindow *win2) {
+        if (win1.isKeyWindow) {
+            return true;
+        } else {
+            return win1.windowLevel < win2.windowLevel || !win1.isOpaque;
+        }
+    }];
     
+    UIWindow *keyWindow = [windowArray lastObject];
     if (!keyWindow) {
         keyWindow = [UIApplication sharedApplication].delegate.window;
     }
+    
     return keyWindow;
 }
 
