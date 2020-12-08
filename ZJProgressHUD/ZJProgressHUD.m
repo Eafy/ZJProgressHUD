@@ -71,32 +71,39 @@ static ZJProgressHUD *_shared;
 
 - (void)hudWasHidden:(MBProgressHUD *)hud
 {
-    if (self.superview) {
-        [self removeFromSuperview];
-    }
-    
-    if (_overlayWindow) {
-        self.overlayWindow.userInteractionEnabled = NO;
-        if (self.isShowLan) {
-            self.isShowLan = NO;
-        }
-        _overlayWindow.transform = CGAffineTransformIdentity;
-        [self.overlayWindow resignKeyWindow];
-        [self.overlayWindow removeFromSuperview];
-        _overlayWindow = nil;
-    }
-    
     if (self.mainWindow) {
         if (NSThread.isMainThread) {
             [self.mainWindow makeKeyAndVisible];
+            _mainWindow = nil;
         } else {
+            __weak ZJProgressHUD *weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.mainWindow makeKeyAndVisible];
+                [weakSelf.mainWindow makeKeyAndVisible];
+                weakSelf.mainWindow = nil;
             });
         }
     }
     
-    _hud = nil;
+    [self removeFromSuperview];
+    if (_subView) {
+        [self.subView removeFromSuperview];
+        _subView = nil;
+    }
+    if (_hud) {
+        self.hud.delegate = nil;
+        [self.hud removeFromSuperview];
+        _hud = nil;
+    }
+    
+    if (_overlayWindow) {
+        self.overlayWindow.userInteractionEnabled = NO;
+        [self.overlayWindow resignKeyWindow];
+        [self.overlayWindow removeFromSuperview];
+        self.overlayWindow.hidden = YES;
+        _overlayWindow = nil;
+    }
+    
+    self.isShowLan = NO;
 }
 
 #pragma mark _______________________________________________
@@ -109,15 +116,7 @@ static ZJProgressHUD *_shared;
 
 + (void)dismiss
 {
-    if ([ZJProgressHUD shared].hud) {
-        [ZJProgressHUD shared].hud.delegate = nil;
-        if ([ZJProgressHUD shared].subView) {
-            [MBProgressHUD hideHUDForView:[ZJProgressHUD shared].subView animated:NO];
-            [ZJProgressHUD shared].subView = nil;
-        } else {
-            [MBProgressHUD hideHUDForView:[ZJProgressHUD shared] animated:NO];
-        }
-    }
+    [ZJProgressHUD shared].hud.delegate = nil;
     [[ZJProgressHUD shared] hudWasHidden:nil];
 }
 
@@ -330,24 +329,6 @@ static ZJProgressHUD *_shared;
 #pragma mark _______________________________________________
 #pragma mark 单例类--内部使用方法
 
-+ (UIWindow *)keyWindow
-{
-    NSArray *windowArray = [[UIApplication sharedApplication].windows sortedArrayUsingComparator:^NSComparisonResult(UIWindow *win1, UIWindow *win2) {
-        if (win1.isKeyWindow) {
-            return true;
-        } else {
-            return win1.windowLevel < win2.windowLevel || !win1.isOpaque;
-        }
-    }];
-    
-    UIWindow *keyWindow = [windowArray lastObject];
-    if (!keyWindow) {
-        keyWindow = [UIApplication sharedApplication].delegate.window;
-    }
-    
-    return keyWindow;
-}
-
 - (UIWindow *)overlayWindow
 {
     if (!_overlayWindow) {
@@ -359,9 +340,10 @@ static ZJProgressHUD *_shared;
                                 | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         _overlayWindow.backgroundColor = [UIColor clearColor];
         _overlayWindow.userInteractionEnabled = NO;
+        _overlayWindow.windowLevel = UIWindowLevelNormal;
         
         if (_mainWindow) {
-            [_mainWindow addSubview:_overlayWindow];
+            [[ZJProgressHUD keyWindow] addSubview:_overlayWindow];
         }
     }
     return _overlayWindow;
@@ -506,6 +488,26 @@ static ZJProgressHUD *_shared;
 }
 
 #pragma mark -
+
++ (UIWindow *)keyWindow
+{
+    UIWindow *keyWindow = [UIApplication sharedApplication].delegate.window;
+    if (keyWindow) return keyWindow;
+    
+    NSEnumerator *frontToBackWindows = [UIApplication.sharedApplication.windows reverseObjectEnumerator];
+    for (UIWindow *window in frontToBackWindows) {
+        BOOL isMainScreen = window.screen == UIScreen.mainScreen;
+        BOOL isVisible = !window.hidden && window.alpha > 0;
+        BOOL isLevelNormal = window.windowLevel == UIWindowLevelNormal;
+        BOOL isKeyWindow = window.isKeyWindow;
+            
+        if (isMainScreen && isVisible && isLevelNormal && isKeyWindow) {
+            return window;
+        }
+    }
+    
+    return nil;
+}
 
 - (nullable UIImage *)imageNamed:(NSString * _Nullable)imageName
 {
