@@ -49,6 +49,9 @@
 /// 移除（不带动画）
 + (void)dismiss;
 
+/// 设置横屏显示（仅当次）
++ (void)isLan;
+
 /// 显示带遮罩层提示框
 /// @param title 提示语
 + (void)message:(NSString *_Nonnull)title;

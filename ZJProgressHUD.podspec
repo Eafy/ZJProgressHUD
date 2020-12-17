@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "ZJProgressHUD"
-  s.version      = "1.1.5"
+  s.version      = "1.1.6"
   s.summary      = "Provide tips hud for iOS Platform."
 
   s.description  = <<-DESC
