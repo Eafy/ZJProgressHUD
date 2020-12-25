@@ -334,6 +334,14 @@ static ZJProgressHUD *_shared;
     }
 }
 
+- (CGFloat)progress {
+    if (self.hud && self.hud.mode == MBProgressHUDModeAnnularDeterminate) {
+        return self.hud.progress;
+    }
+    
+    return 0;
+}
+
 #pragma mark _______________________________________________
 #pragma mark 单例类--内部使用方法
 
@@ -497,7 +505,9 @@ static ZJProgressHUD *_shared;
         weakSelf.hud.mode = MBProgressHUDModeAnnularDeterminate;
         weakSelf.hud.labelText = title;
         weakSelf.hud.progress = 0;
-        weakSelf.hud.color = [UIColor clearColor];
+        if (view) {
+            weakSelf.hud.color = [UIColor clearColor];
+        }
         weakSelf.hud.delegate = weakSelf;
         
         // 隐藏时候从父控件中移除
