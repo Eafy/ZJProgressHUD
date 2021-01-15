@@ -511,9 +511,9 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 			self.indicator = MB_AUTORELEASE([[MBRoundProgressView alloc] init]);
 			[self addSubview:indicator];
 		}
-//		if (mode == MBProgressHUDModeAnnularDeterminate) {
-//			[(MBRoundProgressView *)indicator setAnnular:YES];
-//		}
+		if (mode == MBProgressHUDModeAnnularDeterminate) {
+			[(MBRoundProgressView *)indicator setAnnular:YES];
+		}
 	}
 	else if (mode == MBProgressHUDModeCustomView && customView != indicator) {
 		// Update custom view indicator

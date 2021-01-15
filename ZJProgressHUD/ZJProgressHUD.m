@@ -23,6 +23,8 @@
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) UIView *subView;
 @property (nonatomic, assign) BOOL isShowLan;
+@property (nonatomic, assign) BOOL isVisible;
+@property (nonatomic, assign) BOOL isLoading;
 
 @property (nonatomic, strong) NSString *defaultBundleImagePath;
 
@@ -47,6 +49,7 @@ static ZJProgressHUD *_shared;
             _shared.marginUpDown = 12.f;
             _shared.marginLeftRight = 12.f;
             _shared.isSquare = YES;
+            _shared.progressStyle = ZJHUDProgressStyleAnnularDeterminate;
         });
     }
     return _shared;
@@ -108,6 +111,8 @@ static ZJProgressHUD *_shared;
         self.frame = [[UIScreen mainScreen] bounds];
         self.isShowLan = NO;
     }
+    self.isVisible = NO;
+    self.isLoading = NO;
 }
 
 #pragma mark _______________________________________________
@@ -122,6 +127,14 @@ static ZJProgressHUD *_shared;
 {
     [ZJProgressHUD shared].hud.delegate = nil;
     [[ZJProgressHUD shared] hudWasHidden:nil];
+}
+
++ (BOOL)isVisible {
+    return [ZJProgressHUD shared].isVisible;
+}
+
++ (BOOL)isLoading {
+    return [ZJProgressHUD shared].isLoading;
 }
 
 + (void)isLan {
@@ -329,13 +342,15 @@ static ZJProgressHUD *_shared;
 
 - (void)setProgress:(CGFloat)progress
 {
-    if (self.hud && self.hud.mode == MBProgressHUDModeAnnularDeterminate) {
+    if (_hud && (self.hud.mode == MBProgressHUDModeDeterminate ||
+                 self.hud.mode == MBProgressHUDModeDeterminateHorizontalBar ||
+                 self.hud.mode == MBProgressHUDModeAnnularDeterminate)) {
         self.hud.progress = progress;
     }
 }
 
 - (CGFloat)progress {
-    if (self.hud && self.hud.mode == MBProgressHUDModeAnnularDeterminate) {
+    if (_hud && self.hud.mode == MBProgressHUDModeAnnularDeterminate) {
         return self.hud.progress;
     }
     
@@ -388,6 +403,8 @@ static ZJProgressHUD *_shared;
         if (weakSelf.hud) {
             [ZJProgressHUD dismiss];
         }
+        ZJProgressHUD.shared.isVisible = YES;
+        ZJProgressHUD.shared.isLoading = YES;
         
         if (weakSelf.superview) {
             [weakSelf removeFromSuperview];
@@ -405,6 +422,7 @@ static ZJProgressHUD *_shared;
         weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
         [weakSelf configHubPara:weakSelf.hud];
         
+        weakSelf.hud.mode = MBProgressHUDModeIndeterminate;
         weakSelf.hud.labelText = string;
         weakSelf.hud.delegate = nil;
         // 隐藏时候从父控件中移除
@@ -423,6 +441,8 @@ static ZJProgressHUD *_shared;
         if (weakSelf.hud) {
             [ZJProgressHUD dismiss];
         }
+        ZJProgressHUD.shared.isVisible = YES;
+        ZJProgressHUD.shared.isLoading = NO;
         
         if (weakSelf.superview) {
             [weakSelf removeFromSuperview];
@@ -480,6 +500,8 @@ static ZJProgressHUD *_shared;
         if (weakSelf.hud) {
             [ZJProgressHUD dismiss];
         }
+        ZJProgressHUD.shared.isVisible = YES;
+        ZJProgressHUD.shared.isLoading = YES;
         
         if (weakSelf.superview) {
             [weakSelf removeFromSuperview];
@@ -502,7 +524,7 @@ static ZJProgressHUD *_shared;
         }
         
         [weakSelf configHubPara:weakSelf.hud];
-        weakSelf.hud.mode = MBProgressHUDModeAnnularDeterminate;
+        weakSelf.hud.mode = weakSelf.progressStyle;
         weakSelf.hud.labelText = title;
         weakSelf.hud.progress = 0;
         if (view) {
