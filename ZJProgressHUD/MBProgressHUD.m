@@ -523,7 +523,15 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	} else if (mode == MBProgressHUDModeText) {
 		[indicator removeFromSuperview];
 		self.indicator = nil;
-	}
+    } else if (mode == MBProgressHUDModeAnnularIndeterminate) {
+        if (!isRoundIndicator) {
+            // Update to determinante indicator
+            [indicator removeFromSuperview];
+            self.indicator = MB_AUTORELEASE([[MBRoundProgressView alloc] init]);
+            ((MBRoundProgressView *)self.indicator).animationType = mode;
+            [self addSubview:indicator];
+        }
+    }
 }
 
 #pragma mark - Layout
@@ -790,6 +798,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 
 @end
 
+@interface MBRoundProgressView () <CAAnimationDelegate>
+
+@property (nonatomic, strong) CAShapeLayer *animationLayer;
+
+@end
 
 @implementation MBRoundProgressView
 
@@ -814,6 +827,10 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 }
 
 - (void)dealloc {
+    if (_animationLayer) {
+        [_animationLayer removeAllAnimations];
+        _animationLayer = nil;
+    }
 	[self unregisterFromKVO];
 #if !__has_feature(objc_arc)
 	[_progressTintColor release];
@@ -829,47 +846,101 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	CGRect allRect = self.bounds;
 	CGRect circleRect = CGRectInset(allRect, 2.0f, 2.0f);
 	CGContextRef context = UIGraphicsGetCurrentContext();
-	
-	if (_annular) {
-		// Draw background
-		BOOL isPreiOS7 = kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_7_0;
-		CGFloat lineWidth = isPreiOS7 ? 5.f : 2.f;
-		UIBezierPath *processBackgroundPath = [UIBezierPath bezierPath];
-		processBackgroundPath.lineWidth = lineWidth;
-		processBackgroundPath.lineCapStyle = kCGLineCapButt;
-		CGPoint center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-		CGFloat radius = (self.bounds.size.width - lineWidth)/2;
-		CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
-		CGFloat endAngle = (2 * (float)M_PI) + startAngle;
-		[processBackgroundPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-		[_backgroundTintColor set];
-		[processBackgroundPath stroke];
-		// Draw progress
-		UIBezierPath *processPath = [UIBezierPath bezierPath];
-		processPath.lineCapStyle = isPreiOS7 ? kCGLineCapRound : kCGLineCapSquare;
-		processPath.lineWidth = lineWidth;
-		endAngle = (self.progress * 2 * (float)M_PI) + startAngle;
-		[processPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-		[_progressTintColor set];
-		[processPath stroke];
-	} else {
-		// Draw background
-		[_progressTintColor setStroke];
-		[_backgroundTintColor setFill];
-		CGContextSetLineWidth(context, 2.0f);
-		CGContextFillEllipseInRect(context, circleRect);
-		CGContextStrokeEllipseInRect(context, circleRect);
-		// Draw progress
-		CGPoint center = CGPointMake(allRect.size.width / 2, allRect.size.height / 2);
-		CGFloat radius = (allRect.size.width - 4) / 2;
-		CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
-		CGFloat endAngle = (self.progress * 2 * (float)M_PI) + startAngle;
-		[_progressTintColor setFill];
-		CGContextMoveToPoint(context, center.x, center.y);
-		CGContextAddArc(context, center.x, center.y, radius, startAngle, endAngle, 0);
-		CGContextClosePath(context);
-		CGContextFillPath(context);
-	}
+    
+    if (self.animationType == MBProgressHUDModeAnnularIndeterminate) {
+        if (!_animationLayer) {
+            _animationLayer = [CAShapeLayer layer];
+            _animationLayer.frame = allRect;
+            _animationLayer.path = [UIBezierPath bezierPathWithOvalInRect:allRect].CGPath;
+            _animationLayer.lineWidth = 2.f;
+            _animationLayer.strokeColor = [UIColor whiteColor].CGColor;
+            _animationLayer.fillColor = [UIColor clearColor].CGColor;
+            [self.layer addSublayer:_animationLayer];
+        }
+        [self startLayerAnimation];
+    } else {
+        if (_annular) {
+            // Draw background
+            BOOL isPreiOS7 = kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_7_0;
+            CGFloat lineWidth = isPreiOS7 ? 5.f : 2.f;
+            UIBezierPath *processBackgroundPath = [UIBezierPath bezierPath];
+            processBackgroundPath.lineWidth = lineWidth;
+            processBackgroundPath.lineCapStyle = kCGLineCapButt;
+            CGPoint center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+            CGFloat radius = (self.bounds.size.width - lineWidth)/2;
+            CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
+            CGFloat endAngle = (2 * (float)M_PI) + startAngle;
+            [processBackgroundPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
+            [_backgroundTintColor set];
+            [processBackgroundPath stroke];
+            // Draw progress
+            UIBezierPath *processPath = [UIBezierPath bezierPath];
+            processPath.lineCapStyle = isPreiOS7 ? kCGLineCapRound : kCGLineCapSquare;
+            processPath.lineWidth = lineWidth;
+            endAngle = (self.progress * 2 * (float)M_PI) + startAngle;
+            [processPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
+            [_progressTintColor set];
+            [processPath stroke];
+        } else {
+            // Draw background
+            [_progressTintColor setStroke];
+            [_backgroundTintColor setFill];
+            CGContextSetLineWidth(context, 2.0f);
+            CGContextFillEllipseInRect(context, circleRect);
+            CGContextStrokeEllipseInRect(context, circleRect);
+            // Draw progress
+            CGPoint center = CGPointMake(allRect.size.width / 2, allRect.size.height / 2);
+            CGFloat radius = (allRect.size.width - 4) / 2;
+            CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
+            CGFloat endAngle = (self.progress * 2 * (float)M_PI) + startAngle;
+            [_progressTintColor setFill];
+            CGContextMoveToPoint(context, center.x, center.y);
+            CGContextAddArc(context, center.x, center.y, radius, startAngle, endAngle, 0);
+            CGContextClosePath(context);
+            CGContextFillPath(context);
+        }
+    }
+}
+
+#pragma mark - CAAnimationDelegate
+
+- (void)startLayerAnimation {
+    if (self.animationType == MBProgressHUDModeAnnularIndeterminate) {
+        _animationLayer.strokeStart = 0.f;
+        _animationLayer.strokeEnd = 0.f;
+        
+        if (![_animationLayer animationForKey:@"MBProgressHUD_Layer_GroupAnimation1"]) {
+            CABasicAnimation *animation1 = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+            animation1.fromValue = @0.0;
+            animation1.toValue = @(M_PI * 2);
+            animation1.removedOnCompletion = NO;        //动画完成是否移除动画
+            animation1.repeatCount = HUGE_VALF;
+            animation1.cumulative = YES;    //指定动画重复是否累加
+            animation1.autoreverses = NO;   //设置动画完成时，是否自动以动画回到原点
+            animation1.duration = 1.5;
+            
+            CABasicAnimation *animation2 = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+            animation2.fromValue = @(0);
+            animation2.toValue = @(1);
+            animation2.removedOnCompletion = NO;
+            animation2.repeatCount = HUGE_VALF;
+            animation2.cumulative = NO;
+            animation2.autoreverses = YES;
+            animation2.duration = 1.3;
+            animation2.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+            
+            [_animationLayer addAnimation:animation1 forKey:@"MBProgressHUD_Layer_GroupAnimation1"];
+            [_animationLayer addAnimation:animation2 forKey:@"MBProgressHUD_Layer_GroupAnimation2"];
+        }
+    }
+}
+
+- (void)animationDidStart:(CAAnimation *)anim {
+}
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
+    if (_animationLayer && flag) {
+    }
 }
 
 #pragma mark - KVO

@@ -331,9 +331,14 @@ static ZJProgressHUD *_shared;
     [[ZJProgressHUD shared] showHubMessageWithTitle:title duration:duration state:2 mark:NO view:nil yOffset:yOffset];
 }
 
-+ (ZJProgressHUD *)annularHubWithWithTitle:(NSString *)title view:(UIView *)view
++ (ZJProgressHUD *)progressWithTitle:(NSString *)title view:(UIView *)view
 {
-    [[ZJProgressHUD shared] showAnnularHubWithWithTitle:title mark:NO view:view];
+    [[ZJProgressHUD shared] showProgressHubWithStyle:[ZJProgressHUD shared].progressStyle title:title mark:NO view:view];
+    return [ZJProgressHUD shared];
+}
+
++ (ZJProgressHUD * _Nonnull)progressWithTitle:(ZJHUDProgressStyle)style title:(NSString *)title view:(UIView *)view {
+    [[ZJProgressHUD shared] showProgressHubWithStyle:style title:title mark:NO view:view];
     return [ZJProgressHUD shared];
 }
 
@@ -491,7 +496,7 @@ static ZJProgressHUD *_shared;
     });
 }
 
-- (void)showAnnularHubWithWithTitle:(NSString *)title mark:(BOOL)isMark view:(UIView *)view
+- (void)showProgressHubWithStyle:(ZJHUDProgressStyle)style title:(NSString *)title mark:(BOOL)isMark view:(UIView *)view
 {
     __weak ZJProgressHUD *weakSelf = self;
     __block BOOL isShowLan = self.isShowLan;
@@ -524,7 +529,7 @@ static ZJProgressHUD *_shared;
         }
         
         [weakSelf configHubPara:weakSelf.hud];
-        weakSelf.hud.mode = weakSelf.progressStyle;
+        weakSelf.hud.mode = style;
         weakSelf.hud.labelText = title;
         weakSelf.hud.progress = 0;
         if (view) {

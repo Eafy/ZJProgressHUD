@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, ZJHUDProgressStyle) {
     ZJHUDProgressStyleDeterminate,      //饼图
     ZJHUDProgressStyleDeterminateHorizontalBar,     //水平进度条
     ZJHUDProgressStyleAnnularDeterminate,   //圆环
+    ZJHUDProgressStyleAnnularIndeterminate = 6,     //圆环旋转
 };
 
 @interface ZJProgressHUD : UIView
@@ -158,10 +159,16 @@ typedef NS_ENUM(NSUInteger, ZJHUDProgressStyle) {
 + (void)errorWithTitle:(NSString * _Nonnull)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset;
 + (void)errorWithTitleForNoMark:(NSString * _Nonnull)title duration:(NSTimeInterval)duration yOffset:(CGFloat)yOffset;
 
-/// 显示进度加载框
+/// 显示进度加载框(带具体数值进度)
 /// @param title 加载提示语
 /// @param view 需要加载的父类视图
-+ (ZJProgressHUD * _Nonnull)annularHubWithWithTitle:(NSString * _Nonnull)title view:(UIView * _Nullable)view;
++ (ZJProgressHUD * _Nonnull)progressWithTitle:(NSString * _Nullable)title view:(UIView * _Nullable)view;
+
+/// 显示进度加载框（无具体数值进度）
+/// @param style 进度样式（一次性）
+/// @param title 标题
+/// @param view 俯视图
++ (ZJProgressHUD * _Nonnull)progressWithTitle:(ZJHUDProgressStyle)style title:(NSString * _Nullable)title view:(UIView * _Nullable)view;
 
 @end
 

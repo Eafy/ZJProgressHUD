@@ -45,7 +45,8 @@ typedef NS_ENUM(NSInteger, MBProgressHUDMode) {
 	/** Shows a custom view */
 	MBProgressHUDModeCustomView,
 	/** Shows only labels */
-	MBProgressHUDModeText
+	MBProgressHUDModeText,
+    MBProgressHUDModeAnnularIndeterminate,
 };
 
 typedef NS_ENUM(NSInteger, MBProgressHUDAnimation) {
@@ -491,6 +492,9 @@ typedef void (^MBProgressHUDCompletionBlock)(void);
  * Display mode - NO = round or YES = annular. Defaults to round.
  */
 @property (nonatomic, assign, getter = isAnnular) BOOL annular;
+
+
+@property (nonatomic, assign) MBProgressHUDMode animationType;
 
 @end
 
