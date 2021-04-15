@@ -483,7 +483,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 - (void)updateIndicators {
 	
 	BOOL isActivityIndicator = [indicator isKindOfClass:[UIActivityIndicatorView class]];
-	BOOL isRoundIndicator = [indicator isKindOfClass:[MBRoundProgressView class]];
+	BOOL isRoundIndicator = [indicator isKindOfClass:[ZJMBRoundProgressView class]];
 	
 	if (mode == ZJMBProgressHUDModeIndeterminate) {
 		if (!isActivityIndicator) {
@@ -501,18 +501,18 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	else if (mode == ZJMBProgressHUDModeDeterminateHorizontalBar) {
 		// Update to bar determinate indicator
 		[indicator removeFromSuperview];
-		self.indicator = MB_AUTORELEASE([[MBBarProgressView alloc] init]);
+		self.indicator = MB_AUTORELEASE([[ZJMBBarProgressView alloc] init]);
 		[self addSubview:indicator];
 	}
 	else if (mode == ZJMBProgressHUDModeDeterminate || mode == ZJMBProgressHUDModeAnnularDeterminate) {
 		if (!isRoundIndicator) {
 			// Update to determinante indicator
 			[indicator removeFromSuperview];
-			self.indicator = MB_AUTORELEASE([[MBRoundProgressView alloc] init]);
+			self.indicator = MB_AUTORELEASE([[ZJMBRoundProgressView alloc] init]);
 			[self addSubview:indicator];
 		}
 		if (mode == ZJMBProgressHUDModeAnnularDeterminate) {
-			[(MBRoundProgressView *)indicator setAnnular:YES];
+			[(ZJMBRoundProgressView *)indicator setAnnular:YES];
 		}
 	}
 	else if (mode == ZJMBProgressHUDModeCustomView && customView != indicator) {
@@ -527,8 +527,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         if (!isRoundIndicator) {
             // Update to determinante indicator
             [indicator removeFromSuperview];
-            self.indicator = MB_AUTORELEASE([[MBRoundProgressView alloc] init]);
-            ((MBRoundProgressView *)self.indicator).animationType = mode;
+            self.indicator = MB_AUTORELEASE([[ZJMBRoundProgressView alloc] init]);
+            ((ZJMBRoundProgressView *)self.indicator).animationType = mode;
             [self addSubview:indicator];
         }
     }
@@ -798,13 +798,13 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 
 @end
 
-@interface MBRoundProgressView () <CAAnimationDelegate>
+@interface ZJMBRoundProgressView () <CAAnimationDelegate>
 
 @property (nonatomic, strong) CAShapeLayer *animationLayer;
 
 @end
 
-@implementation MBRoundProgressView
+@implementation ZJMBRoundProgressView
 
 #pragma mark - Lifecycle
 
@@ -968,7 +968,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 @end
 
 
-@implementation MBBarProgressView
+@implementation ZJMBBarProgressView
 
 #pragma mark - Lifecycle
 
