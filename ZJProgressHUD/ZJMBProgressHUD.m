@@ -1,10 +1,10 @@
 //
-// MBProgressHUD.m
+// ZJMBProgressHUD.m
 // Version 0.9.1
 // Created by Matej Bukovinski on 2.4.09.
 //
 
-#import "MBProgressHUD.h"
+#import "ZJMBProgressHUD.h"
 #import <tgmath.h>
 
 
@@ -52,7 +52,7 @@ static const CGFloat kLabelFontSize = 16.f;
 static const CGFloat kDetailsLabelFontSize = 12.f;
 
 
-@interface MBProgressHUD () {
+@interface ZJMBProgressHUD () {
 	BOOL useAnimation;
 	SEL methodForExecution;
 	id targetForExecution;
@@ -71,7 +71,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 @end
 
 
-@implementation MBProgressHUD
+@implementation ZJMBProgressHUD
 
 #pragma mark - Properties
 
@@ -112,7 +112,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 #pragma mark - Class methods
 
 + (MB_INSTANCETYPE)showHUDAddedTo:(UIView *)view animated:(BOOL)animated {
-	MBProgressHUD *hud = [[self alloc] initWithView:view];
+	ZJMBProgressHUD *hud = [[self alloc] initWithView:view];
 	hud.removeFromSuperViewOnHide = YES;
 	[view addSubview:hud];
 	[hud show:animated];
@@ -120,7 +120,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 }
 
 + (BOOL)hideHUDForView:(UIView *)view animated:(BOOL)animated {
-	MBProgressHUD *hud = [self HUDForView:view];
+	ZJMBProgressHUD *hud = [self HUDForView:view];
 	if (hud != nil) {
 		hud.removeFromSuperViewOnHide = YES;
 		[hud hide:animated];
@@ -130,8 +130,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 }
 
 + (NSUInteger)hideAllHUDsForView:(UIView *)view animated:(BOOL)animated {
-	NSArray *huds = [MBProgressHUD allHUDsForView:view];
-	for (MBProgressHUD *hud in huds) {
+	NSArray *huds = [ZJMBProgressHUD allHUDsForView:view];
+	for (ZJMBProgressHUD *hud in huds) {
 		hud.removeFromSuperViewOnHide = YES;
 		[hud hide:animated];
 	}
@@ -142,7 +142,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	NSEnumerator *subviewsEnum = [view.subviews reverseObjectEnumerator];
 	for (UIView *subview in subviewsEnum) {
 		if ([subview isKindOfClass:self]) {
-			return (MBProgressHUD *)subview;
+			return (ZJMBProgressHUD *)subview;
 		}
 	}
 	return nil;
@@ -165,8 +165,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	self = [super initWithFrame:frame];
 	if (self) {
 		// Set default values for properties
-		self.animationType = MBProgressHUDAnimationFade;
-		self.mode = MBProgressHUDModeIndeterminate;
+		self.animationType = ZJMBProgressHUDAnimationFade;
+		self.mode = ZJMBProgressHUDModeIndeterminate;
 		self.labelText = nil;
 		self.detailsLabelText = nil;
 		self.opacity = 0.8f;
@@ -316,9 +316,9 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self setNeedsDisplay];
 
-	if (animated && animationType == MBProgressHUDAnimationZoomIn) {
+	if (animated && animationType == ZJMBProgressHUDAnimationZoomIn) {
 		self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(0.5f, 0.5f));
-	} else if (animated && animationType == MBProgressHUDAnimationZoomOut) {
+	} else if (animated && animationType == ZJMBProgressHUDAnimationZoomOut) {
 		self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(1.5f, 1.5f));
 	}
 	self.showStarted = [NSDate date];
@@ -327,7 +327,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.30];
 		self.alpha = 1.0f;
-		if (animationType == MBProgressHUDAnimationZoomIn || animationType == MBProgressHUDAnimationZoomOut) {
+		if (animationType == ZJMBProgressHUDAnimationZoomIn || animationType == ZJMBProgressHUDAnimationZoomOut) {
 			self.transform = rotationTransform;
 		}
 		[UIView commitAnimations];
@@ -346,9 +346,9 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		[UIView setAnimationDidStopSelector:@selector(animationFinished:finished:context:)];
 		// 0.02 prevents the hud from passing through touches during the animation the hud will get completely hidden
 		// in the done method
-		if (animationType == MBProgressHUDAnimationZoomIn) {
+		if (animationType == ZJMBProgressHUDAnimationZoomIn) {
 			self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(1.5f, 1.5f));
-		} else if (animationType == MBProgressHUDAnimationZoomOut) {
+		} else if (animationType == ZJMBProgressHUDAnimationZoomOut) {
 			self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(0.5f, 0.5f));
 		}
 
@@ -414,7 +414,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 }
 
 - (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block onQueue:(dispatch_queue_t)queue
-	 completionBlock:(MBProgressHUDCompletionBlock)completion {
+	 completionBlock:(ZJMBProgressHUDCompletionBlock)completion {
 	self.taskInProgress = YES;
 	self.completionBlock = completion;
 	dispatch_async(queue, ^(void) {
@@ -485,7 +485,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	BOOL isActivityIndicator = [indicator isKindOfClass:[UIActivityIndicatorView class]];
 	BOOL isRoundIndicator = [indicator isKindOfClass:[MBRoundProgressView class]];
 	
-	if (mode == MBProgressHUDModeIndeterminate) {
+	if (mode == ZJMBProgressHUDModeIndeterminate) {
 		if (!isActivityIndicator) {
 			// Update to indeterminate indicator
 			[indicator removeFromSuperview];
@@ -498,32 +498,32 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		[(UIActivityIndicatorView *)indicator setColor:self.activityIndicatorColor];
 #endif
 	}
-	else if (mode == MBProgressHUDModeDeterminateHorizontalBar) {
+	else if (mode == ZJMBProgressHUDModeDeterminateHorizontalBar) {
 		// Update to bar determinate indicator
 		[indicator removeFromSuperview];
 		self.indicator = MB_AUTORELEASE([[MBBarProgressView alloc] init]);
 		[self addSubview:indicator];
 	}
-	else if (mode == MBProgressHUDModeDeterminate || mode == MBProgressHUDModeAnnularDeterminate) {
+	else if (mode == ZJMBProgressHUDModeDeterminate || mode == ZJMBProgressHUDModeAnnularDeterminate) {
 		if (!isRoundIndicator) {
 			// Update to determinante indicator
 			[indicator removeFromSuperview];
 			self.indicator = MB_AUTORELEASE([[MBRoundProgressView alloc] init]);
 			[self addSubview:indicator];
 		}
-		if (mode == MBProgressHUDModeAnnularDeterminate) {
+		if (mode == ZJMBProgressHUDModeAnnularDeterminate) {
 			[(MBRoundProgressView *)indicator setAnnular:YES];
 		}
 	}
-	else if (mode == MBProgressHUDModeCustomView && customView != indicator) {
+	else if (mode == ZJMBProgressHUDModeCustomView && customView != indicator) {
 		// Update custom view indicator
 		[indicator removeFromSuperview];
 		self.indicator = customView;
 		[self addSubview:indicator];
-	} else if (mode == MBProgressHUDModeText) {
+	} else if (mode == ZJMBProgressHUDModeText) {
 		[indicator removeFromSuperview];
 		self.indicator = nil;
-    } else if (mode == MBProgressHUDModeAnnularIndeterminate) {
+    } else if (mode == ZJMBProgressHUDModeAnnularIndeterminate) {
         if (!isRoundIndicator) {
             // Update to determinante indicator
             [indicator removeFromSuperview];
@@ -847,7 +847,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	CGRect circleRect = CGRectInset(allRect, 2.0f, 2.0f);
 	CGContextRef context = UIGraphicsGetCurrentContext();
     
-    if (self.animationType == MBProgressHUDModeAnnularIndeterminate) {
+    if (self.animationType == ZJMBProgressHUDModeAnnularIndeterminate) {
         if (!_animationLayer) {
             _animationLayer = [CAShapeLayer layer];
             _animationLayer.frame = allRect;
@@ -905,11 +905,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 #pragma mark - CAAnimationDelegate
 
 - (void)startLayerAnimation {
-    if (self.animationType == MBProgressHUDModeAnnularIndeterminate) {
+    if (self.animationType == ZJMBProgressHUDModeAnnularIndeterminate) {
         _animationLayer.strokeStart = 0.f;
         _animationLayer.strokeEnd = 0.f;
         
-        if (![_animationLayer animationForKey:@"MBProgressHUD_Layer_GroupAnimation1"]) {
+        if (![_animationLayer animationForKey:@"ZJMBProgressHUD_Layer_GroupAnimation1"]) {
             CABasicAnimation *animation1 = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
             animation1.fromValue = @0.0;
             animation1.toValue = @(M_PI * 2);
@@ -929,8 +929,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
             animation2.duration = 1.3;
             animation2.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
             
-            [_animationLayer addAnimation:animation1 forKey:@"MBProgressHUD_Layer_GroupAnimation1"];
-            [_animationLayer addAnimation:animation2 forKey:@"MBProgressHUD_Layer_GroupAnimation2"];
+            [_animationLayer addAnimation:animation1 forKey:@"ZJMBProgressHUD_Layer_GroupAnimation1"];
+            [_animationLayer addAnimation:animation2 forKey:@"ZJMBProgressHUD_Layer_GroupAnimation2"];
         }
     }
 }

@@ -7,7 +7,7 @@
 //
 
 #import "ZJProgressHUD.h"
-#import "MBProgressHUD.h"
+#import "ZJMBProgressHUD.h"
 
 #ifndef kScreenHeight
 #define kScreenHeight ([[UIScreen mainScreen] bounds].size.height)   //屏幕高度
@@ -16,11 +16,11 @@
 #define kScreenWidth ([[UIScreen mainScreen] bounds].size.width)     //屏幕宽度
 #endif
 
-@interface ZJProgressHUD() <MBProgressHUDDelegate>
+@interface ZJProgressHUD() <ZJMBProgressHUDDelegate>
 
 @property (nonatomic, strong) UIWindow *mainWindow;
 @property (nonatomic, strong) UIWindow *overlayWindow;
-@property (nonatomic, strong) MBProgressHUD *hud;
+@property (nonatomic, strong) ZJMBProgressHUD *hud;
 @property (nonatomic, strong) UIView *subView;
 @property (nonatomic, assign) BOOL isShowLan;
 @property (nonatomic, assign) BOOL isVisible;
@@ -55,7 +55,7 @@ static ZJProgressHUD *_shared;
     return _shared;
 }
 
-- (void)configHubPara:(MBProgressHUD *)hud
+- (void)configHubPara:(ZJMBProgressHUD *)hud
 {
     if (!hud) return;
     hud.labelFont = self.font;
@@ -70,9 +70,9 @@ static ZJProgressHUD *_shared;
     hud.square = self.isSquare;
 }
 
-#pragma mark - MBProgressHUDDelegate
+#pragma mark - ZJMBProgressHUDDelegate
 
-- (void)hudWasHidden:(MBProgressHUD *)hud
+- (void)hudWasHidden:(ZJMBProgressHUD *)hud
 {
     if (self.mainWindow) {
         if (NSThread.isMainThread) {
@@ -347,15 +347,15 @@ static ZJProgressHUD *_shared;
 
 - (void)setProgress:(CGFloat)progress
 {
-    if (_hud && (self.hud.mode == MBProgressHUDModeDeterminate ||
-                 self.hud.mode == MBProgressHUDModeDeterminateHorizontalBar ||
-                 self.hud.mode == MBProgressHUDModeAnnularDeterminate)) {
+    if (_hud && (self.hud.mode == ZJMBProgressHUDModeDeterminate ||
+                 self.hud.mode == ZJMBProgressHUDModeDeterminateHorizontalBar ||
+                 self.hud.mode == ZJMBProgressHUDModeAnnularDeterminate)) {
         self.hud.progress = progress;
     }
 }
 
 - (CGFloat)progress {
-    if (_hud && self.hud.mode == MBProgressHUDModeAnnularDeterminate) {
+    if (_hud && self.hud.mode == ZJMBProgressHUDModeAnnularDeterminate) {
         return self.hud.progress;
     }
     
@@ -391,10 +391,10 @@ static ZJProgressHUD *_shared;
     dispatch_async(dispatch_get_main_queue(), ^{
         weakSelf.hud.delegate = anmotion?weakSelf:nil;
         if (weakSelf.subView) {
-            [MBProgressHUD hideHUDForView:weakSelf.subView animated:anmotion];
+            [ZJMBProgressHUD hideHUDForView:weakSelf.subView animated:anmotion];
             [ZJProgressHUD shared].subView = nil;
         } else {
-            [MBProgressHUD hideHUDForView:weakSelf animated:anmotion];
+            [ZJMBProgressHUD hideHUDForView:weakSelf animated:anmotion];
         }
     });
 }
@@ -424,10 +424,10 @@ static ZJProgressHUD *_shared;
             weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
         }
         
-        weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        weakSelf.hud = [ZJMBProgressHUD showHUDAddedTo:weakSelf animated:YES];
         [weakSelf configHubPara:weakSelf.hud];
         
-        weakSelf.hud.mode = MBProgressHUDModeIndeterminate;
+        weakSelf.hud.mode = ZJMBProgressHUDModeIndeterminate;
         weakSelf.hud.labelText = string;
         weakSelf.hud.delegate = nil;
         // 隐藏时候从父控件中移除
@@ -471,7 +471,7 @@ static ZJProgressHUD *_shared;
         }
         
         // 快速显示一个提示信息
-        weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+        weakSelf.hud = [ZJMBProgressHUD showHUDAddedTo:weakSelf animated:YES];
         if (suState == 1) {
             if (weakSelf.successImage) {
                 weakSelf.hud.customView = [[UIImageView alloc] initWithImage:weakSelf.successImage];
@@ -482,7 +482,7 @@ static ZJProgressHUD *_shared;
             }
         }
         [weakSelf configHubPara:weakSelf.hud];
-        weakSelf.hud.mode = MBProgressHUDModeCustomView;
+        weakSelf.hud.mode = ZJMBProgressHUDModeCustomView;
         weakSelf.hud.labelText = title;
         weakSelf.hud.delegate = weakSelf;
         weakSelf.hud.yOffset = yOffset;
@@ -513,7 +513,7 @@ static ZJProgressHUD *_shared;
         }
         if (view) {
             weakSelf.subView = view;
-            weakSelf.hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+            weakSelf.hud = [ZJMBProgressHUD showHUDAddedTo:view animated:YES];
         } else {
             [weakSelf.overlayWindow addSubview:weakSelf];
             [weakSelf.overlayWindow makeKeyAndVisible];
@@ -525,7 +525,7 @@ static ZJProgressHUD *_shared;
                 weakSelf.center = CGPointMake(kScreenWidth/2.0, kScreenHeight/2.0);
             }
             
-            weakSelf.hud = [MBProgressHUD showHUDAddedTo:weakSelf animated:YES];
+            weakSelf.hud = [ZJMBProgressHUD showHUDAddedTo:weakSelf animated:YES];
         }
         
         [weakSelf configHubPara:weakSelf.hud];
