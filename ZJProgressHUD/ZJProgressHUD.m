@@ -75,16 +75,8 @@ static ZJProgressHUD *_shared;
 - (void)hudWasHidden:(ZJMBProgressHUD *)hud
 {
     if (self.mainWindow) {
-        if (NSThread.isMainThread) {
-            [self.mainWindow makeKeyAndVisible];
-            _mainWindow = nil;
-        } else {
-            __weak ZJProgressHUD *weakSelf = self;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.mainWindow makeKeyAndVisible];
-                weakSelf.mainWindow = nil;
-            });
-        }
+        [self.mainWindow makeKeyAndVisible];
+        _mainWindow = nil;
     }
     
     [self removeFromSuperview];
@@ -126,7 +118,13 @@ static ZJProgressHUD *_shared;
 + (void)dismiss
 {
     [ZJProgressHUD shared].hud.delegate = nil;
-    [[ZJProgressHUD shared] hudWasHidden:nil];
+    if (NSThread.isMainThread) {
+        [[ZJProgressHUD shared] hudWasHidden:nil];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[ZJProgressHUD shared] hudWasHidden:nil];
+        });
+    }
 }
 
 + (BOOL)isVisible {
