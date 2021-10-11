@@ -546,8 +546,11 @@ static ZJProgressHUD *_shared;
 
 + (UIWindow *)keyWindow
 {
-    UIWindow *keyWindow = [UIApplication sharedApplication].delegate.window;
-    if (keyWindow) return keyWindow;
+    if ([UIApplication sharedApplication].delegate && [[UIApplication sharedApplication].delegate respondsToSelector:@selector(window)]) {
+        if ([UIApplication sharedApplication].delegate.window) {
+            return [UIApplication sharedApplication].delegate.window;
+        }
+    }
     
     NSEnumerator *frontToBackWindows = [UIApplication.sharedApplication.windows reverseObjectEnumerator];
     for (UIWindow *window in frontToBackWindows) {
