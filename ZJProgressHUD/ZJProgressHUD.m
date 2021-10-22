@@ -74,11 +74,6 @@ static ZJProgressHUD *_shared;
 
 - (void)hudWasHidden:(ZJMBProgressHUD *)hud
 {
-    if (self.mainWindow) {
-        [self.mainWindow makeKeyAndVisible];
-        _mainWindow = nil;
-    }
-    
     [self removeFromSuperview];
     if (_subView) {
         [self.subView removeFromSuperview];
@@ -105,6 +100,11 @@ static ZJProgressHUD *_shared;
     }
     self.isVisible = NO;
     self.isLoading = NO;
+    
+    if (self.mainWindow) {
+        [self.mainWindow makeKeyAndVisible];
+        _mainWindow = nil;
+    }
 }
 
 #pragma mark _______________________________________________
